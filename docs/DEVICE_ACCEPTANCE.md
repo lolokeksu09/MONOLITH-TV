@@ -289,3 +289,32 @@ bridge screenshots remain in the private repository at
 `captures/issue-175.png`, `issue-177.png`, `issue-179.png`,
 `issue-181.png` and `issue-186.png`; they are not copied to this
 public project.
+
+## 0.1.4 Cinema live BOXY installation — 13 November 2026
+
+- **PASS — private bridge recovered:** v2 issued #201 (`app_info`) and
+  #202 (`device_summary`) were processed by the Termux/ADB worker.
+  BOXY is Android 11, 1920×1080, physical density 320.
+- **PASS — non-destructive install:** bridge issue #204 reported SUCCESS
+  installing SHA-256-verified APK from successful main workflow run
+  `43501308271`. `dev.monolith.tv.cinema` installed alongside existing
+  `dev.monolith.tv.preview` and `dev.monolith.tv.review` (existing
+  variants were present immediately before install in issue #203).
+  Bridge #205 confirmed `0.1.4-prealpha-cinema`, versionCode 5.
+- **PASS — launch request:** bridge #206 requested launch; #207 returned
+  foreground `dev.monolith.tv.cinema/dev.monolith.tv.MainActivity`.
+- **BLOCKED — visual capture:** private screenshots #208 and #211 are
+  completely black, with identical Git blob SHA
+  `906397130a495a3fad788ac0634df012812ab354`.
+  HOME key #212 changed foreground to the stock Google TV Launcher (#213),
+  yet screenshot #214 is *identically black*. After OK #215, screenshot
+  #217 remained identical. This means blank captures are **not specific
+  to MONOLITH**, and an HDMI/display sleep or capture failure must be
+  excluded before judging whether the app UI renders.
+- **NOT VERIFIED:** Cinema typography, dock visuals, D-pad traversal,
+  favorites, Settings, 720p, frame pacing, cold boot and persistence.
+
+**Verdict: installation and foreground activity confirmed; visual
+acceptance BLOCKED by all-black device screenshots, including stock HOME.**
+A screen wake / HDMI-active state is needed before repeating screenshot
+and D-pad tests. No default HOME change, uninstall or app data clear.
