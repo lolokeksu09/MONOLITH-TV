@@ -1,88 +1,97 @@
-# MONOLITH TV · Visual system v1
+# MONOLITH TV · AMOLED design system v2 (0.1.3 pre-alpha)
 
-## Direction: editorial gallery, not a tile dashboard
+## Verified baseline
 
-The 0.1.1 preview had an oversized top toolbar, equal emphasis on every outline,
-and a large unused region below the app grid on 1920×1080 BOXY screenshots.
-The redesigned screen uses a deliberate two-part composition:
+BOXY Android TV 11 (1920×1080 at 320dpi; ~960×540dp), private screenshot
+`vitrum-tv-bridge/captures/issue-131.png` on 13 Nov 2026:
+the 0.1.2 editorial rail occupies the left quarter of the TV and
+the library is composed of identical solid gray rectangles.
+It is functional but gives every app tile the same emphasis and wastes space.
 
-- **Left information rail:** MONOLITH TV identity, actual device time, real
-  app/favorite counts, and the currently focused application's own icon/title.
-  This is a functional selection preview, not an advertising banner.
-- **Right app gallery:** quiet four-column app grid on the reference BOXY
-  viewport, larger app tiles, clean text alignment and no permanent outlines.
-  On narrower layouts it switches to three columns and a narrower rail.
-- **Top-level navigation:** All, Favorites and Settings remain explicit
-  remote-focusable controls. Focus has a bright neutral keyline plus a surface
-  change; active-tab state is deliberately more subtle.
-- **Settings:** identical visual language and selection rail, three legible
-  focusable preference rows with their real persistent values, and a single
-  Done action.
+## 0.1.3 screen architecture
 
-## Tokens
+The new screen is a substantial structure change, not just a recolor:
 
-| Role | Value |
+1. **AMOLED-native canvas** (`#000000`) behind the entire experience.
+   No wallpaper download, blur, fake content or decorative gradients.
+2. **Navigation rail** on the left: MONOLITH TV identity, focusable All,
+   Favorites and Settings with real app counts, actual device time and
+   concise remote hint. The current section uses a thin cyan indicator.
+3. **Selection hero** on the right, above the grid. It displays the actual
+   focused app's title and *original Android Drawable*; navigating the grid
+   changes the hero without launching an app. Empty Favorites has a
+   contextual hero instead of a random previous app.
+4. **App gallery**: four columns on the reference BOXY layout, three on
+   narrower viewports; small unobtrusive resting cards and prominent
+   D-pad focus (140ms scale 1.035, dark-cyan elevation surface,
+   2dp light-cyan keyline). No continuous animation, no expensive blur.
+5. **Settings panel**: actual persistent Compact Grid/Favorites First
+   values in accessible focused rows, a Done action and direct Android
+   Settings route. Vertical scrolling remains available.
+
+## Palette / typography
+
+| Token | Hex |
 | --- | --- |
-| Canvas | `#090B0E` |
-| Left rail | `#14171C` |
-| App / preference surface | `#1A1E24` |
-| Focused surface | `#303741` |
-| Primary text | `#F4F5F7` |
-| Secondary text | `#B0B9C4` |
-| Focus keyline / subtle accent | `#E1EAF4` |
+| Background | `#000000` |
+| Resting tile | `#0B0F13` |
+| Selection hero | `#10161B` |
+| Focused tile | `#11212A` |
+| Primary text | `#F5FAFC` |
+| Secondary text | `#B2C0C7` |
+| Small metadata | `#84949C` |
+| Focus / accent | `#B7F3FF` |
 
-Typography uses the platform sans serif, with one clear hierarchy: large
-selected app name, medium grid labels, small helpful metadata. Avoid
-gratuitous tracking, all-caps eyebrow labels, texture, glow and gradients.
+Typography deliberately uses the platform TV sans font and distinct
+hierarchy: compact navigation (13–15sp), apps (13–14sp), library heading
+(18–20sp), hero title (24–33sp), clock (30–40sp).
+Important focus state is indicated by outline and surface change
+in addition to cyan, never color alone.
 
-## TV layout targets
+## Geometry
 
-- Reference BOXY: 1920×1080, Android 11, density 320 (logical 960×540dp).
-- 28dp horizontal and 24dp vertical outer margin on the reference class.
-- Rail width 214dp; separation 24dp; right content uses four columns,
-  11dp gaps and 116dp compact / 128dp comfortable card heights.
-- Width under 800dp: 176dp rail, 20dp outer margin, 16dp separation and
-  three columns; height under 510dp uses shorter app cards, a compact rail
-  (reduced time typography/preview icon/metadata) and 18dp margins.
-- Settings content scrolls vertically so all three preferences and Android
-  Settings remain reachable by D-pad on short-height devices.
-- The app grid scrolls independently. No new manual scrolling gesture or
-  touch requirement is introduced.
-- Preference rows and navigation controls remain D-pad focusable and readable
-  from a television viewing distance.
+Pure Kotlin `TvLayoutSpec.forViewport(widthDp, heightDp, compactGrid)`
+determines columns, rail, margins, hero height and tile sizes.
 
-## Immutable product rules
+- Reference 960×540dp: rail 166dp; four columns; hero 122dp;
+  96dp compact cards, 10dp gaps. Three rows plus grid padding fit
+  the viewport with the 22dp vertical safe area.
+- 640×360dp: rail 138dp, three columns, hero 96dp, 88dp compact
+  cards; grid scrolls when rows exceed remaining height.
+- Comfortable mode increases tile height and scrolls naturally;
+  app icon artwork remains unchanged.
+- Settings are always vertically scrollable.
 
-1. Installed application artwork comes directly from the actual Android
-   `Drawable`. No redraw, icon pack, backdrop tile, tint, clip or generated
-   logo is permitted. The rail uses the same source icon as the selected tile.
-2. Keep All / Favorites, MENU toggling, OK launching, Settings and Back,
-   persistence, catalog loading/error handling and package visibility.
-3. Do not change package IDs, signing, HOME selection, permissions, Android
-   services, stock launcher settings, or unrelated mobile MONOLITH code.
-4. No ads, invented recommendations, accounts, network calls or metrics.
-5. Remote-focused elements require visible focus beyond a color change.
+## Preserved invariants
 
-## Acceptance gates
+- Original application `Drawable` is displayed via Android `ImageView`
+  `FIT_CENTER`. No tint, icon packs, forced masks or replacements.
+- Stable application component keys and focus restoration after MENU toggle.
+- OFFLINE app enumeration, launch, Favorites, compact option and Back.
+- No changes to app permissions, production application ID, stock HOME,
+  system services, signing identity or installed app metadata.
+- English/Russian strings for every new UI element.
 
-- **CI:** JVM unit tests, Android lint and debug APK assembly pass on the
-  exact redesigned revision.
-- **Hardware (pending until new APK is installed):** repeat 1080p screenshots
-  with All, Favorites-empty, one favorite, Settings and both grid densities;
-  verify each D-pad direction, MENU focus retention, selected-app preview,
-  Back restoration and no clipped text or icons.
-- **Limit:** a successful CI build or prior 0.1.1 hardware test does not
-  constitute a pass on the new visual revision. The GitHub Actions debug APK
-  has an ephemeral certificate and is not a supported in-place update channel.
+## Dependency decision
 
-## 0.1.2 layout review
+- Compose BOM **2026.09.00**: latest confirmed stable BOM.
+- Activity Compose **1.13.0** and Lifecycle KTX **2.11.0**: stable.
+- TV Material **1.1.0** already matches current stable release, so it
+  is kept instead of inserting an imaginary newer version.
+- Compose animation is explicitly declared for focus interactions.
+- Kotlin/AGP remain unchanged to limit upgrade risk; Compose BOM does not
+  manage Kotlin compiler or Android Gradle Plugin.
 
-Source inspection identified a short-height case that CI compilation could not
-catch visually: the original left rail stacked large time, selected-app icon,
-metadata and hints with `SpaceBetween`, which could exceed a 720p screen's
-logical height. Additionally, Settings used a non-scrollable Column with three
-98dp rows plus a heading. Version 0.1.2 compacts the rail for screens below
-510dp high and gives Settings a vertical scroll container plus 82dp rows.
+## Verification gates
 
-**Evidence:** source-level change and Gradle CI only. 720p screenshot/D-pad
-validation and 1080p comparison remain required on a running APK.
+1. JVM tests (`TvLayoutSpecTest` and previous ordering tests), lint, APK.
+2. Verify source revision and debug APK signature/version.
+3. Install the exact APK on BOXY, retaining stock HOME and app data.
+4. Capture 1080p All, Favorites empty, one favorite, Settings; check
+   icon originals and visible D-pad focus while moving.
+5. Test MENU favorite, Back, compact setting persistence and application
+   launch/return; check memory/frame pacing before claiming optimization.
+6. 720p must be tested on device or marked NOT RUN.
+
+CI success does not prove TV rendering. Prior 0.1.2 screenshots are only
+the baseline for comparison, never 0.1.3 acceptance.
