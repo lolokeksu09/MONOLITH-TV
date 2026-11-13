@@ -48,5 +48,5 @@ dev.monolith.tv
 
 ### Decision record
 
-Approved initial stack: AGP 8.13.2; Kotlin/Compose compiler 2.3.0; Gradle 8.13; Compose BOM 2026.09.00; Compose TV Material 1.1.0; Android compile SDK 36, target SDK 35, minimum SDK 26. CI must verify resolved dependency compatibility.
+Approved initial stack: AGP 8.13.2; Kotlin/Compose compiler 2.3.0; Gradle 8.13; Compose BOM 2025.08.00; Compose TV Material 1.1.0; Android compile SDK 36, target SDK 35, minimum SDK 26. Versions are pinned to avoid Compose 1.12.x requiring AGP 9.1/SDK 37; CI must verify resolved dependency compatibility.
 
