@@ -33,7 +33,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.focus.onFocusChanged
@@ -64,7 +64,6 @@ fun LauncherScreen(
     onToggleFavorite: (String) -> Unit,
     onOpenSettings: () -> Unit
 ) {
-    val context = LocalContext.current
     val ordered = remember(apps, favoritePackages) {
         AppOrder.sort(apps, favoritePackages, { it.packageName }, { it.title })
     }
@@ -90,7 +89,7 @@ fun LauncherScreen(
                 Text("MONOLITH TV", color = Primary, fontSize = 28.sp, fontWeight = FontWeight.SemiBold)
                 Spacer(Modifier.height(5.dp))
                 Text(
-                    context.getString(R.string.remote_hint),
+                    stringResource(R.string.remote_hint),
                     color = Secondary,
                     fontSize = 14.sp
                 )
@@ -98,14 +97,14 @@ fun LauncherScreen(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(clock, color = Primary, fontSize = 25.sp)
                 Spacer(Modifier.width(26.dp))
-                ActionTile(context.getString(R.string.settings), onOpenSettings)
+                ActionTile(stringResource(R.string.settings), onOpenSettings)
             }
         }
 
         Spacer(Modifier.height(28.dp))
         when {
-            loading -> Text(context.getString(R.string.loading), color = Secondary, fontSize = 18.sp)
-            ordered.isEmpty() -> Text(context.getString(R.string.no_apps), color = Primary, fontSize = 18.sp)
+            loading -> Text(stringResource(R.string.loading), color = Secondary, fontSize = 18.sp)
+            ordered.isEmpty() -> Text(stringResource(R.string.no_apps), color = Primary, fontSize = 18.sp)
             else -> LazyVerticalGrid(
                 columns = GridCells.Adaptive(minSize = 170.dp),
                 modifier = Modifier.fillMaxSize(),
@@ -135,7 +134,7 @@ private fun AppTile(
 ) {
     var focused by remember { mutableStateOf(false) }
     val shape = RoundedCornerShape(12.dp)
-    val context = LocalContext.current
+    val favoriteLabel = stringResource(R.string.favorite)
 
     Column(
         modifier = Modifier
@@ -156,7 +155,7 @@ private fun AppTile(
             )
             .background(if (focused) TileFocused else TileBackground, shape)
             .semantics {
-                contentDescription = app.title + if (isFavorite) " " + context.getString(R.string.favorite) else ""
+                contentDescription = app.title + if (isFavorite) " " + favoriteLabel else ""
             }
             .clickable(onClick = onLaunch)
             .padding(horizontal = 12.dp, vertical = 10.dp),
@@ -179,7 +178,7 @@ private fun AppTile(
         Column {
             Text(app.title, color = Primary, fontSize = 16.sp, maxLines = 1)
             Text(
-                if (isFavorite) context.getString(R.string.favorite) else " ",
+                if (isFavorite) favoriteLabel else " ",
                 color = Secondary,
                 fontSize = 12.sp,
                 maxLines = 1
