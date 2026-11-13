@@ -1,0 +1,52 @@
+# Architecture · ADR 001
+
+**Decision:** Kotlin + Jetpack Compose for TV, one Android :app module, simple state ownership. Do not split modules without measured need.
+
+## Dependency direction
+
+- `MainActivity`: Android lifecycle, activity launch and navigation callbacks.
+- `catalog/AppCatalog`: PackageManager discovery, safe explicit launch targets.
+- `catalog/AppOrder`: pure favorite-first/alphabetical sorting.
+- `storage/FavoritesStore`: local SharedPreferences, one stable key.
+- `ui/LauncherScreen`: only rendering, D-pad focus, no direct app discovery.
+- Android platform is the source for app names and original icons.
+
+## Packages
+
+```
+dev.monolith.tv
+├── MainActivity.kt
+├── catalog/
+│   ├── AppCatalog.kt
+│   └── AppOrder.kt
+├── storage/FavoritesStore.kt
+└── ui/LauncherScreen.kt
+```
+
+## Launch and package visibility
+
+- Manifest advertises HOME + DEFAULT and LEANBACK_LAUNCHER, without silently selecting HOME.
+- `<queries>` declares MAIN/LEANBACK_LAUNCHER and MAIN/LAUNCHER for Android 11+ visibility.
+- Deduplicate by explicit ComponentName; handle removed/disabled target and SecurityException.
+- Do not request QUERY_ALL_PACKAGES or use undocumented device-specific shortcuts.
+- Async enumeration; refresh on resume; order by favorite then localized app name.
+
+## Lifecycle and persistence
+
+- MainActivity owns UI-visible state for the pre-alpha MVP.
+- Never block the UI thread with PackageManager queries.
+- Favorites are a set of package names under a namespaced SharedPreferences file.
+- App removal must not crash even if an older favorite remains in preferences.
+- After first milestone, move state to a ViewModel/StateFlow if complexity warrants it. Do not introduce DI or a database before they solve a real problem.
+
+## Architecture risks
+
+1. Firmware HOME resolver may handle custom launchers differently. Validate on BOXY, keep stock installed.
+2. DPAD focus behavior depends on framework and device. Real remote acceptance mandatory.
+3. Android package visibility excludes non-launchable packages by design.
+4. Preview debug signatures can change between CI runs: no guarantee of in-place upgrades.
+
+### Decision record
+
+Approved initial stack: AGP 8.13.2; Kotlin/Compose compiler 2.3.0; Gradle 8.13; Compose BOM 2026.09.00; Compose TV Material 1.1.0; Android compile SDK 36, target SDK 35, minimum SDK 26. CI must verify resolved dependency compatibility.
+

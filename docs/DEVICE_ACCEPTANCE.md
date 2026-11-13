@@ -1,0 +1,39 @@
+# BOXY device acceptance
+
+## Test target
+
+BOXY / HP4421-BOXY, Android TV 11, Amlogic S905X4, 2 GB RAM. Initial ADB address `192.168.0.160:5555` on `TV-HOME` 5 GHz; DHCP can change this address.
+
+## Recorded pre-project stock baseline (not MONOLITH TV)
+
+Google TV launcher `com.google.android.tvlauncher` after gfxinfo reset and manual navigation: 576 frames, 20 janky (3.47%), p90 9 ms, p95 13 ms, p99 28 ms. Earlier unreset sample: 245 frames, 37 janky (15.10%). Treat these as differing sessions, not proof of optimization.
+
+Audio firmware `DOLBY_MS12` uses about 20–24% of one core idle. Do not claim a launcher can fix this vendor audio-driver behavior.
+
+## Manual release checklist
+
+- [ ] Preview APK installed without affecting stock HOME
+- [ ] All tiles reachable by physical DPAD, with visible focus
+- [ ] Center/Enter launch VK Video, YouTube, Dune HD, Settings
+- [ ] Back behavior consistent with HOME routing
+- [ ] Favorite toggle persists after process restart and power cycle
+- [ ] No incorrect icons; all source icons unchanged
+- [ ] No network required to list/launch apps
+- [ ] HDMI audio and remote buttons work
+- [ ] OEM/Google TV remains available and functional
+- [ ] Evaluate gfxinfo after resetting counters, matching same navigation duration
+- [ ] Compare startup and available RAM in repeatable sessions
+- [ ] App recovers after target is uninstalled/disabled
+- [ ] Confirm Android 11 package visibility on real hardware
+
+## Commands (Termux or PC ADB)
+
+```bash
+adb -s 192.168.0.160:5555 shell am start -n dev.monolith.tv.preview/dev.monolith.tv.MainActivity
+adb -s 192.168.0.160:5555 shell dumpsys gfxinfo dev.monolith.tv.preview reset
+# Navigate for one minute, then:
+adb -s 192.168.0.160:5555 shell dumpsys gfxinfo dev.monolith.tv.preview
+```
+
+Save all long command output under `/storage/emulated/0/Download` on the phone. Never store Wi-Fi passwords or personal tokens in committed logs.
+

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MONOLITH TV</string>
+    <string name="remote_hint">OK to launch · MENU to toggle favorite</string>
+    <string name="settings">Settings</string>
+    <string name="loading">Loading installed apps…</string>
+    <string name="no_apps">No launchable TV apps found. Open Settings to check installed apps.</string>
+    <string name="favorite">Favorite</string>
+    <string name="app_unavailable">The app is unavailable</string>
+    <string name="settings_unavailable">Settings cannot be opened</string>
+</resources>
+

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MONOLITH TV</string>
+    <string name="remote_hint">OK — открыть · MENU — в избранное</string>
+    <string name="settings">Настройки</string>
+    <string name="loading">Загрузка приложений…</string>
+    <string name="no_apps">Приложения не найдены. Откройте настройки для проверки.</string>
+    <string name="favorite">Избранное</string>
+    <string name="app_unavailable">Не удалось открыть приложение</string>
+    <string name="settings_unavailable">Не удалось открыть настройки</string>
+</resources>
+
