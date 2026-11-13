@@ -8,6 +8,11 @@
     <string name="selected_now">Выбрано</string>
     <string name="item_count">Приложений: %1$d</string>
     <string name="open_with_ok">Нажмите OK, чтобы открыть</string>
+    <string name="studio_ready">Готово к запуску</string>
+    <string name="launch_short">Открыть</string>
+    <string name="favorite_short">В избранное</string>
+    <string name="remove_favorite_short">Убрать из избранного</string>
+    <string name="dock_hint">LEFT / RIGHT — выбор · MENU — избранное</string>
     <string name="no_favorites_title">Нет избранного</string>
     <string name="favorites_tab">Избранное</string>
     <string name="settings">Настройки</string>
