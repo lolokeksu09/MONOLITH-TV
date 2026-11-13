@@ -6,6 +6,9 @@
     <string name="all_apps">All</string>
     <string name="apps_heading">Apps</string>
     <string name="selected_now">Selected</string>
+    <string name="item_count">%1$d apps</string>
+    <string name="open_with_ok">Press OK to open</string>
+    <string name="no_favorites_title">No favorites</string>
     <string name="favorites_tab">Favorites</string>
     <string name="settings">Settings</string>
     <string name="loading">Loading installed apps…</string>
