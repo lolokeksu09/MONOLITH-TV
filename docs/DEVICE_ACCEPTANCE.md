@@ -47,3 +47,19 @@ Source: `BOXY_MONOLITH_AUDIT_20261113_085630.tar.gz` from the physical BOXY, And
 - Two RIGHT presses at the rightmost Vitrum TV cell yielded pixel-identical screenshots. This is compatible with a right boundary; without focus-tree data it is *not* a confirmed focus bug.
 - gfxinfo after navigation sampled just 13 rendered frames, 7 janky (53.85%), p90 85ms. Do not use this to claim steady-state performance or compare with stock Google TV.
 - Fix: tile height 118dp, original app icon presentation scaled to 52dp without bitmap processing, 8dp row gap and 6dp bottom padding. Expected to show three full rows on BOXY; **must be verified with a new device capture**.
+
+## 0.1.1-prealpha new device acceptance (not yet completed)
+
+- [ ] On 1080p/320dpi, check that compact and comfortable app rows are never clipped
+- [ ] Confirm All / Favorites filter is navigable via D-pad and empty favorites screen has focus
+- [ ] MENU on an app adds/removes it without jumping focus to the wrong component
+- [ ] With Favorites filter selected, removing the last favorite leaves a usable empty state
+- [ ] Settings opens with focus on Done; Back returns to the previously selected app
+- [ ] Changing compact grid and favorites-first persists after process restart
+- [ ] Android Settings opens from within launcher settings and returning does not reset choices
+- [ ] Original app Drawables are still untouched in both grid densities
+- [ ] Compare gfxinfo after a meaningful fixed navigation sequence, not a 13-frame sample
+
+The preview APK certificate changes between fresh GitHub Actions runners; do not assume
+`adb install -r` is a supported upgrade path. Uninstalling the old preview deletes its
+local favorite and layout preferences. Never uninstall the stock Google TV launcher.
