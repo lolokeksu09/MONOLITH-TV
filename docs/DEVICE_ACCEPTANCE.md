@@ -89,3 +89,58 @@ These observations concern the physically installed `dev.monolith.tv.preview` ve
 The existing `0.1.1-prealpha` acceptance checklist above remains **open**;
 a successful screenshot and CI do not establish release acceptance. Do not
 replace the stock launcher yet.
+
+
+## 0.1.1 controlled BOXY remote-key replay · 13 November 2026, 20:53–21:01 MSK
+
+Target: installed `dev.monolith.tv.preview` `0.1.1-prealpha-preview`
+(versionCode 2), Android TV 11 on the same physical BOXY. The private
+`vitrum-tv-bridge` agent was restarted after merging its single-worker
+fix (commit `87de6b8`), and keys were injected one at a time by ADB.
+This is **real-device UI evidence**, but **not a physical-remote test**.
+
+- **PASS — single worker:** GitHub bridge request #86 produced one result
+  comment. Before repair, comparable requests sometimes had two results.
+  The repaired focus diagnostics reported Google Backdrop initially
+  (correctly identifying the obscuring Dream), and after BACK + relaunch
+  reported `dev.monolith.tv.preview/dev.monolith.tv.MainActivity`
+  (bridge request #92).
+- **PASS — one-cell navigation:** screenshot #93 showed focus on BrowseHere.
+  One `RIGHT` request #94 followed by screenshot #95 showed focus on
+  `Cx Проводник`, the adjacent tile: no double advancement.
+- **PASS — favorite add and remove in All:** while `Cx Проводник` was
+  selected, one `MENU` made the favorites counter 1, moved that app
+  first and retained focus on it (screenshot #97). A second `MENU`
+  restored counter 0 and alphabetical grid ordering without losing focus
+  (screenshot #99). This did not test removal of the last favorite **while
+  viewing the Favorites filter**.
+- **PASS — empty Favorites screen:** `UP` focused All (screenshot #101);
+  `RIGHT` + `OK` opened the Favorites filter with 0 items and a visible
+  focused Favorites header tile (screenshot #104). It remained navigable.
+- **PASS — settings entry and Back:** `RIGHT` + `OK` opened settings
+  with a visible focus outline on Done (screenshot #107).
+  A subsequent `BACK` returned to the previously selected Favorites
+  filter (screenshot #114), rather than exiting to another app.
+- **PASS — compact preference toggle and restore:** `DOWN` + `OK`
+  changed the focused Compact Grid preference from Enabled to Disabled
+  (screenshot #110). Another `OK` changed it back to Enabled
+  (screenshot #112). The previous setting was restored before leaving.
+  `Favorites First` remained Enabled, unchanged.
+- **PASS — return to grid:** `LEFT` + `OK` returned to All with 11
+  visible apps and `Cx Проводник` focused (screenshot #117).
+- **PASS — basic layout:** in the captured default compact grid all three
+  rows of 11 apps had complete tiles, icons and text. This does **not**
+  prove unclipped layout under the comfortable setting, other DPI or
+  other app counts.
+
+The screenshots are in **private bridge repository history** under
+`captures/issue-NNN.png` for the issue numbers above; they are intentionally
+not copied into the public MONOLITH-TV repository.
+
+**Still NOT RUN:** physical remote buttons; launching every target app and
+returning; process restart, power cycle and persistence of preferences;
+Favorites last-item removal while the Favorites filter is active; Android
+system Settings round-trip; 1080p comfortable-grid overflow; repeatable
+`gfxinfo`/RAM benchmarking; same-certificate APK update; default-HOME
+selection and rollback. Do not declare hardware acceptance complete and
+do not replace the stock launcher.
