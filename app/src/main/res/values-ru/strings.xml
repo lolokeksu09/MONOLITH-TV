@@ -6,6 +6,9 @@
     <string name="all_apps">Все</string>
     <string name="apps_heading">Приложения</string>
     <string name="selected_now">Выбрано</string>
+    <string name="item_count">Приложений: %1$d</string>
+    <string name="open_with_ok">Нажмите OK, чтобы открыть</string>
+    <string name="no_favorites_title">Нет избранного</string>
     <string name="favorites_tab">Избранное</string>
     <string name="settings">Настройки</string>
     <string name="loading">Загрузка приложений…</string>
