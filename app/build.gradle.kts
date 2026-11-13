@@ -21,9 +21,16 @@ android {
 
     buildTypes {
         debug {
-            // A separately installable preview, never an automatic HOME replacement.
+            // Existing user preview: never wipe it to resolve signing conflicts.
             applicationIdSuffix = ".preview"
             versionNameSuffix = "-preview"
+        }
+        create("review") {
+            // Parallel BOXY UI acceptance build. Leaves the existing preview and
+            // its local favorites/preferences untouched if CI signatures differ.
+            initWith(getByName("debug"))
+            applicationIdSuffix = ".review"
+            versionNameSuffix = "-review"
         }
         release {
             // No production release is distributed until dedicated stable signing exists.
