@@ -267,11 +267,13 @@ not blanket hardware signoff.
   favorites count 1 while preserving its focus and hero. Bridge #180 and
   screenshot #181 show count returning to 0, alphabetical ordering restored,
   and the same tile still focused.
-- **NEEDS INVESTIGATION — grid-to-rail D-pad navigation:** after returning
-  to the normal All grid, the sequence LEFT, LEFT, DOWN, OK (bridge issues
-  #182-#185) led to BrowseHere opening (#186), not the intended empty
-  Favorites section. This sequence alone does not prove which directional
-  transition failed; a controlled one-key screenshot comparison is required.
+- **PASS — grid-to-rail LEFT transition:** on relaunch, screenshot #193
+  showed BrowseHere focused in the first grid column. One LEFT (#194) made
+  the Settings rail item visibly focused (#195). The earlier
+  LEFT, LEFT, DOWN, OK sequence (#182-#185) opened BrowseHere (#186)
+  because the assumed menu target/order was incorrect; it does **not**
+  establish a left-navigation failure. Rail UP/DOWN and Favorites selection
+  still require a complete verified sequence.
 - **PASS — external app launch:** the same #186 capture shows BrowseHere
   actually opened (although accidentally during the navigation attempt).
   A complete launch/Back return path was *not* established by that capture.
