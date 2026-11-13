@@ -4,6 +4,8 @@
     <string name="remote_hint">OK — открыть · MENU — в избранное</string>
     <string name="apps_meta">Приложения %1$d · Избранное %2$d</string>
     <string name="all_apps">Все</string>
+    <string name="apps_heading">Приложения</string>
+    <string name="selected_now">Выбрано</string>
     <string name="favorites_tab">Избранное</string>
     <string name="settings">Настройки</string>
     <string name="loading">Загрузка приложений…</string>
