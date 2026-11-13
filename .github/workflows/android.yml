@@ -30,7 +30,7 @@ jobs:
           test -n "$SDKMANAGER"
           "$SDKMANAGER" --install "platforms;android-36" "build-tools;35.0.0"
       - name: Check Termux audit script syntax
-        run: bash -n scripts/BOXY_monolith_visual_audit_v2.sh
+        run: bash -n scripts/BOXY_monolith_visual_audit_v3.sh
       - name: Unit tests, lint, debug APK
         shell: bash
         run: |
