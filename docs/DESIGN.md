@@ -42,7 +42,10 @@ gratuitous tracking, all-caps eyebrow labels, texture, glow and gradients.
 - Rail width 214dp; separation 24dp; right content uses four columns,
   11dp gaps and 116dp compact / 128dp comfortable card heights.
 - Width under 800dp: 176dp rail, 20dp outer margin, 16dp separation and
-  three columns; height under 510dp uses shorter app cards and 18dp margins.
+  three columns; height under 510dp uses shorter app cards, a compact rail
+  (reduced time typography/preview icon/metadata) and 18dp margins.
+- Settings content scrolls vertically so all three preferences and Android
+  Settings remain reachable by D-pad on short-height devices.
 - The app grid scrolls independently. No new manual scrolling gesture or
   touch requirement is introduced.
 - Preference rows and navigation controls remain D-pad focusable and readable
@@ -71,3 +74,15 @@ gratuitous tracking, all-caps eyebrow labels, texture, glow and gradients.
 - **Limit:** a successful CI build or prior 0.1.1 hardware test does not
   constitute a pass on the new visual revision. The GitHub Actions debug APK
   has an ephemeral certificate and is not a supported in-place update channel.
+
+## 0.1.2 layout review
+
+Source inspection identified a short-height case that CI compilation could not
+catch visually: the original left rail stacked large time, selected-app icon,
+metadata and hints with `SpaceBetween`, which could exceed a 720p screen's
+logical height. Additionally, Settings used a non-scrollable Column with three
+98dp rows plus a heading. Version 0.1.2 compacts the rail for screens below
+510dp high and gives Settings a vertical scroll container plus 82dp rows.
+
+**Evidence:** source-level change and Gradle CI only. 720p screenshot/D-pad
+validation and 1080p comparison remain required on a running APK.

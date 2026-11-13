@@ -4,6 +4,8 @@ import android.view.KeyEvent
 import android.widget.ImageView
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -195,7 +197,8 @@ fun LauncherScreen(
                 footer = stringResource(
                     if (settingsVisible) R.string.settings_saved else R.string.remote_hint
                 ),
-                compact = narrow
+                compact = narrow,
+                short = short
             )
 
             if (settingsVisible) {
@@ -204,6 +207,7 @@ fun LauncherScreen(
                         .weight(1f)
                         .fillMaxHeight(),
                     options = options,
+                    short = short,
                     onOptionsChange = onOptionsChange,
                     onClose = { settingsVisible = false },
                     onOpenAndroidSettings = onOpenAndroidSettings
@@ -310,35 +314,37 @@ private fun BrandRail(
     favorite: Boolean,
     title: String,
     footer: String,
-    compact: Boolean
+    compact: Boolean,
+    short: Boolean
 ) {
     Column(
         modifier = modifier
             .background(Rail, RoundedCornerShape(18.dp))
-            .padding(horizontal = if (compact) 17.dp else 22.dp, vertical = 20.dp),
+            .padding(horizontal = if (compact) 17.dp else 22.dp,
+                vertical = if (short) 12.dp else 20.dp),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         Column {
             Text(
                 text = stringResource(R.string.app_name),
                 color = Primary,
-                fontSize = if (compact) 20.sp else 25.sp,
+                fontSize = if (short) 17.sp else if (compact) 20.sp else 25.sp,
                 fontWeight = FontWeight.Bold,
                 letterSpacing = (-0.8).sp,
                 maxLines = 1
             )
-            Spacer(Modifier.height(17.dp))
+            Spacer(Modifier.height(if (short) 8.dp else 17.dp))
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(1.dp)
                     .background(Hairline)
             )
-            Spacer(Modifier.height(21.dp))
+            Spacer(Modifier.height(if (short) 8.dp else 21.dp))
             Text(
                 text = clock,
                 color = Primary,
-                fontSize = if (compact) 38.sp else 44.sp,
+                fontSize = if (short) 28.sp else if (compact) 38.sp else 44.sp,
                 fontWeight = FontWeight.Light
             )
             Spacer(Modifier.height(3.dp))
@@ -346,8 +352,8 @@ private fun BrandRail(
                 text = meta,
                 color = Secondary,
                 fontSize = if (compact) 11.sp else 12.sp,
-                lineHeight = 17.sp,
-                maxLines = 3
+                lineHeight = if (short) 15.sp else 17.sp,
+                maxLines = if (short) 2 else 3
             )
         }
 
@@ -358,20 +364,23 @@ private fun BrandRail(
                     color = Secondary,
                     fontSize = 12.sp
                 )
-                Spacer(Modifier.height(14.dp))
-                OriginalAppIcon(app, Modifier.size(if (compact) 60.dp else 72.dp))
-                Spacer(Modifier.height(14.dp))
+                Spacer(Modifier.height(if (short) 7.dp else 14.dp))
+                OriginalAppIcon(
+                    app,
+                    Modifier.size(if (short) 44.dp else if (compact) 60.dp else 72.dp)
+                )
+                Spacer(Modifier.height(if (short) 7.dp else 14.dp))
                 Text(
                     text = app.title,
                     color = Primary,
-                    fontSize = if (compact) 22.sp else 25.sp,
+                    fontSize = if (short) 17.sp else if (compact) 22.sp else 25.sp,
                     fontWeight = FontWeight.SemiBold,
-                    lineHeight = if (compact) 26.sp else 30.sp,
-                    maxLines = 2,
+                    lineHeight = if (short) 20.sp else if (compact) 26.sp else 30.sp,
+                    maxLines = if (short) 1 else 2,
                     overflow = TextOverflow.Ellipsis
                 )
                 if (favorite) {
-                    Spacer(Modifier.height(5.dp))
+                    Spacer(Modifier.height(if (short) 2.dp else 5.dp))
                     Text(
                         text = stringResource(R.string.favorite),
                         color = Accent,
@@ -382,9 +391,9 @@ private fun BrandRail(
                 Text(
                     text = title,
                     color = Primary,
-                    fontSize = if (compact) 22.sp else 25.sp,
-                    lineHeight = 29.sp,
-                    maxLines = 3
+                    fontSize = if (short) 18.sp else if (compact) 22.sp else 25.sp,
+                    lineHeight = if (short) 22.sp else 29.sp,
+                    maxLines = if (short) 2 else 3
                 )
             }
         }
@@ -392,9 +401,9 @@ private fun BrandRail(
         Text(
             text = footer,
             color = Secondary,
-            fontSize = if (compact) 11.sp else 12.sp,
-            lineHeight = 18.sp,
-            maxLines = 4
+            fontSize = if (short) 10.sp else if (compact) 11.sp else 12.sp,
+            lineHeight = if (short) 14.sp else 18.sp,
+            maxLines = if (short) 2 else 4
         )
     }
 }
@@ -510,6 +519,7 @@ private fun AppTile(
 private fun SettingsScreen(
     modifier: Modifier,
     options: LauncherOptions,
+    short: Boolean,
     onOptionsChange: (LauncherOptions) -> Unit,
     onClose: () -> Unit,
     onOpenAndroidSettings: () -> Unit
@@ -520,7 +530,7 @@ private fun SettingsScreen(
         doneRequester.requestFocus()
     }
 
-    Column(modifier = modifier) {
+    Column(modifier = modifier.verticalScroll(rememberScrollState())) {
         Row(
             modifier = Modifier.fillMaxWidth().height(56.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -529,7 +539,7 @@ private fun SettingsScreen(
             Text(
                 text = stringResource(R.string.settings),
                 color = Primary,
-                fontSize = 27.sp,
+                fontSize = if (short) 21.sp else 27.sp,
                 fontWeight = FontWeight.SemiBold
             )
             NavAction(
@@ -538,22 +548,25 @@ private fun SettingsScreen(
                 requester = doneRequester
             )
         }
-        Spacer(Modifier.height(18.dp))
+        Spacer(Modifier.height(if (short) 10.dp else 18.dp))
         PreferenceTile(
+            short = short,
             title = stringResource(R.string.compact_grid),
             description = stringResource(R.string.compact_grid_description),
             value = stringResource(if (options.compactGrid) R.string.enabled else R.string.disabled),
             onClick = { onOptionsChange(options.copy(compactGrid = !options.compactGrid)) }
         )
-        Spacer(Modifier.height(12.dp))
+        Spacer(Modifier.height(if (short) 8.dp else 12.dp))
         PreferenceTile(
+            short = short,
             title = stringResource(R.string.favorites_first),
             description = stringResource(R.string.favorites_first_description),
             value = stringResource(if (options.favoritesFirst) R.string.enabled else R.string.disabled),
             onClick = { onOptionsChange(options.copy(favoritesFirst = !options.favoritesFirst)) }
         )
-        Spacer(Modifier.height(12.dp))
+        Spacer(Modifier.height(if (short) 8.dp else 12.dp))
         PreferenceTile(
+            short = short,
             title = stringResource(R.string.android_settings),
             description = stringResource(R.string.android_settings_description),
             value = "",
@@ -571,6 +584,7 @@ private fun SettingsScreen(
 
 @Composable
 private fun PreferenceTile(
+    short: Boolean,
     title: String,
     description: String,
     value: String,
@@ -581,7 +595,7 @@ private fun PreferenceTile(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(98.dp)
+            .height(if (short) 82.dp else 98.dp)
             .onFocusChanged { focused = it.isFocused }
             .background(if (focused) SurfaceFocused else Surface, shape)
             .border(
@@ -597,7 +611,7 @@ private fun PreferenceTile(
             Text(
                 text = title,
                 color = Primary,
-                fontSize = 18.sp,
+                fontSize = if (short) 16.sp else 18.sp,
                 fontWeight = FontWeight.SemiBold,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
@@ -606,9 +620,9 @@ private fun PreferenceTile(
             Text(
                 text = description,
                 color = Secondary,
-                fontSize = 13.sp,
-                lineHeight = 18.sp,
-                maxLines = 2,
+                fontSize = if (short) 12.sp else 13.sp,
+                lineHeight = if (short) 16.sp else 18.sp,
+                maxLines = if (short) 1 else 2,
                 overflow = TextOverflow.Ellipsis
             )
         }

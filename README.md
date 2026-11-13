@@ -2,7 +2,7 @@
 
 **MONOLITH TV** is an independent, offline-first Android TV HOME launcher for remote-controlled devices. Initial validation target: **BOXY / HP4421-BOXY, Android TV 11, 2 GB RAM, Amlogic S905X4**.
 
-> Status: **0.1.1 pre-alpha preview**. The original 0.1.0 preview was photographed on BOXY and its clipped tiles were corrected in source. The new 0.1.1 settings/focus changes are **not yet verified on hardware**.
+> Status: **0.1.2 pre-alpha preview**. The original 0.1.1 grid, favorites and settings flows were checked on real BOXY hardware. The 0.1.2 editorial gallery redesign and short-height fixes have **not yet been installed or verified on hardware**.
 
 ## Principles
 
@@ -14,7 +14,8 @@
 
 ## Current preview features
 
-- Responsive TV app grid with untouched Android app icons and remote D-pad focus.
+- Editorial TV gallery with a live selection rail, untouched installed app icons and remote D-pad focus.
+- Four-column 1080p grid, three-column narrow layout, and scrollable Settings on short-height screens.
 - **All / Favorites** navigation; use remote **MENU** on a focused app to pin/unpin.
 - Launcher settings: compact/comfortable grid, alphabetical or favorites-first ordering.
 - Local persistence of both favorites and view settings (survives normal updates using the same signing key).

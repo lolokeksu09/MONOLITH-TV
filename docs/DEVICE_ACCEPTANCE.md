@@ -144,3 +144,39 @@ system Settings round-trip; 1080p comfortable-grid overflow; repeatable
 `gfxinfo`/RAM benchmarking; same-certificate APK update; default-HOME
 selection and rollback. Do not declare hardware acceptance complete and
 do not replace the stock launcher.
+
+## 0.1.2 pre-alpha device status · 13 November 2026
+
+The redesigned source was reviewed without access to an installed 0.1.2
+revision. Evidence and limitations are recorded explicitly:
+
+- **CI on source**: check Android TV CI for the exact 0.1.2 head SHA.
+  Compilation, lint and JVM tests are *not* evidence that the UI renders
+  correctly on BOXY.
+- **Connected BOXY diagnostic**: private TV bridge Issues #118–#120 returned
+  responses. `app_info` did not find a parseable MONOLITH preview version,
+  `pm list packages -3` listed no `dev.monolith.tv.preview`, and
+  `focus_status` reported the stock `com.google.android.tvlauncher` Activity.
+  This strongly suggests that MONOLITH preview is no longer installed,
+  but the package state should be verified again after installing.
+- **Installation gate**: the running bridge process supports ADB diagnostics,
+  keys and screenshots but does *not* load the newly added
+  `install_monolith_ci` operation until it is locally updated and restarted
+  with explicit `--allow-installs`. The GitHub repository update alone does not
+  modify the running Termux process or grant installation permission.
+- **Safety**: no `adb uninstall`, application data clear, stock launcher
+  disable, change of default HOME, firmware change or remote arbitrary shell
+  was performed.
+- **Source correction**: on short-height displays the left rail uses
+  compact spacing/icon/typography and Settings becomes scrollable; this
+  addresses a layout risk identified from code, not a visually reproduced
+  720p defect.
+
+**NOT RUN on version 0.1.2**: installation, launch, new UI screenshots,
+D-pad focus traversal, Favorites/Settings flows, 720p / 1080p visual
+comparisons, performance, memory, HDMI remote test, cold boot and power-cycle
+persistence, and a verified debug-certificate update.
+
+**Release status: NOT DEVICE ACCEPTED.** Keep Google TV as the HOME
+until the new APK is physically installed and the device acceptance
+checklist is repeated on the exact revision.
