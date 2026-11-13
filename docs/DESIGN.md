@@ -79,8 +79,11 @@ determines columns, rail, margins, hero height and tile sizes.
 - TV Material **1.1.0** already matches current stable release, so it
   is kept instead of inserting an imaginary newer version.
 - Compose animation is explicitly declared for focus interactions.
-- Kotlin/AGP remain unchanged to limit upgrade risk; Compose BOM does not
-  manage Kotlin compiler or Android Gradle Plugin.
+- Compose 1.12.1 + Lifecycle 2.11 requires API 37 and AGP 9.1+.
+  The project is migrated to **AGP 9.3.0**, Gradle **9.5.0** and
+  `compileSdk = 37` with built-in Kotlin. Production target/min SDK
+  and the application's Android permissions are unchanged.
+- The Compose BOM does not manage Kotlin or AGP versions.
 
 ## Verification gates
 
