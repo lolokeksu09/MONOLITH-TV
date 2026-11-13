@@ -108,9 +108,9 @@ fun LauncherScreen(
             else -> LazyVerticalGrid(
                 columns = GridCells.Adaptive(minSize = 170.dp),
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(bottom = 20.dp),
+                contentPadding = PaddingValues(bottom = 6.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(ordered, key = { it.component.flattenToString() }) { app ->
                     AppTile(
@@ -138,7 +138,7 @@ private fun AppTile(
 
     Column(
         modifier = Modifier
-            .height(146.dp)
+            .height(118.dp)
             .onFocusChanged { focused = it.isFocused }
             .onPreviewKeyEvent { event ->
                 if (event.type == KeyEventType.KeyUp &&
@@ -173,7 +173,7 @@ private fun AppTile(
             update = { view ->
                 view.setImageDrawable(app.originalIcon.constantState?.newDrawable()?.mutate() ?: app.originalIcon)
             },
-            modifier = Modifier.size(60.dp)
+            modifier = Modifier.size(52.dp)
         )
         Column {
             Text(app.title, color = Primary, fontSize = 16.sp, maxLines = 1)

@@ -37,3 +37,13 @@ adb -s 192.168.0.160:5555 shell dumpsys gfxinfo dev.monolith.tv.preview
 
 Save all long command output under `/storage/emulated/0/Download` on the phone. Never store Wi-Fi passwords or personal tokens in committed logs.
 
+
+## BOXY visual audit · 13 November 2026
+
+Source: `BOXY_MONOLITH_AUDIT_20261113_085630.tar.gz` from the physical BOXY, Android 11, 1920×1080, density 320.
+
+- First screenshot is **Google Backdrop**, not our launcher. The Dream was still displayed above the started activity; the audit script must wake/dismiss the Dream and verify foreground before capturing.
+- Seven later screenshots show MONOLITH TV with visible D-pad focus. Tile height 146dp plus spacing exceeds the 540dp-tall BOXY layout when displaying three rows; top app icons and lower labels become clipped on scrolling.
+- Two RIGHT presses at the rightmost Vitrum TV cell yielded pixel-identical screenshots. This is compatible with a right boundary; without focus-tree data it is *not* a confirmed focus bug.
+- gfxinfo after navigation sampled just 13 rendered frames, 7 janky (53.85%), p90 85ms. Do not use this to claim steady-state performance or compare with stock Google TV.
+- Fix: tile height 118dp, original app icon presentation scaled to 52dp without bitmap processing, 8dp row gap and 6dp bottom padding. Expected to show three full rows on BOXY; **must be verified with a new device capture**.
