@@ -497,14 +497,12 @@ private fun AppTile(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
-        if (isFavorite) {
-            Text(
-                text = favoriteLabel,
-                color = Accent,
-                fontSize = 11.sp,
-                maxLines = 1
-            )
-        }
+        Text(
+            text = if (isFavorite) favoriteLabel else " ",
+            color = Accent,
+            fontSize = 11.sp,
+            maxLines = 1
+        )
     }
 }
 
