@@ -8,6 +8,11 @@
     <string name="selected_now">Selected</string>
     <string name="item_count">%1$d apps</string>
     <string name="open_with_ok">Press OK to open</string>
+    <string name="studio_ready">Ready to launch</string>
+    <string name="launch_short">Open</string>
+    <string name="favorite_short">Add favorite</string>
+    <string name="remove_favorite_short">Remove favorite</string>
+    <string name="dock_hint">LEFT / RIGHT — browse · MENU — favorite</string>
     <string name="no_favorites_title">No favorites</string>
     <string name="favorites_tab">Favorites</string>
     <string name="settings">Settings</string>

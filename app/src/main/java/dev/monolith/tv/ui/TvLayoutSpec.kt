@@ -1,55 +1,57 @@
 package dev.monolith.tv.ui
 
 /**
- * The TV viewport is measured in logical dp, not physical output pixels.
- * BOXY at 1920×1080 / 320dpi reports approximately 960×540dp.
+ * Layout measurements in logical dp, kept independent of Compose to make
+ * 1080p BOXY and short-height TV regressions testable on the JVM.
  *
- * This function deliberately stays free of Android and Compose dependencies,
- * allowing the D-pad geometry to be regression-tested on the JVM.
+ * The 0.1.4 screen is a full-width stage + horizontal app dock, not the
+ * 0.1.3 sidebar + multi-row grid. The main viewport must never overflow.
  */
 internal data class TvLayoutSpec(
     val narrow: Boolean,
     val short: Boolean,
-    val columns: Int,
-    val railDp: Int,
     val edgeDp: Int,
-    val gapDp: Int,
-    val heroDp: Int,
-    val tileDp: Int,
-    val tileGapDp: Int
+    val verticalDp: Int,
+    val headerDp: Int,
+    val stageDp: Int,
+    val sectionDp: Int,
+    val shelfDp: Int,
+    val cardDp: Int,
+    val iconDp: Int,
+    val headerGapDp: Int,
+    val stageGapDp: Int,
+    val shelfGapDp: Int
 ) {
     companion object {
         fun forViewport(widthDp: Float, heightDp: Float, compactGrid: Boolean): TvLayoutSpec {
-            val narrow = widthDp < 800f
-            val short = heightDp < 480f
+            val narrow = widthDp < 760f
+            val short = heightDp < 470f
             return TvLayoutSpec(
                 narrow = narrow,
                 short = short,
-                columns = if (narrow) 3 else 4,
-                railDp = if (narrow) 138 else 166,
-                edgeDp = if (narrow) 14 else 26,
-                gapDp = if (narrow) 12 else 22,
-                heroDp = if (short) 96 else 122,
-                tileDp = if (short) {
-                    if (compactGrid) 88 else 100
+                edgeDp = if (narrow) 17 else 28,
+                verticalDp = if (short) 12 else 18,
+                headerDp = if (short) 42 else 46,
+                stageDp = if (short) 126 else 238,
+                sectionDp = if (short) 22 else 24,
+                shelfDp = if (short) 100 else 150,
+                cardDp = if (short) {
+                    if (compactGrid) 106 else 124
                 } else {
-                    if (compactGrid) 96 else 112
+                    if (compactGrid) 130 else 148
                 },
-                tileGapDp = if (short) 8 else 10
+                iconDp = if (short) 47 else 70,
+                headerGapDp = if (short) 7 else 12,
+                stageGapDp = if (short) 9 else 12,
+                shelfGapDp = if (short) 6 else 7
             )
         }
     }
 
-    fun galleryWidthDp(widthDp: Float): Float =
-        widthDp - 2 * edgeDp - railDp - gapDp
+    fun contentHeightDp(): Int = headerDp + stageDp + sectionDp + shelfDp +
+        headerGapDp + stageGapDp + shelfGapDp + 2 * verticalDp
 
-    fun threeCompactRowsFit(heightDp: Float): Boolean {
-        val usable = heightDp - if (short) 28 else 44
-        // Hero, two vertical gaps, apps heading and three compact rows.
-        val content = heroDp + 12 + 28 + 8 + 3 * tileDp + 2 * tileGapDp + 14
-        return compactRowHeightFits(usable, content)
-    }
+    fun fitsViewport(heightDp: Float): Boolean = contentHeightDp() <= heightDp
 
-    private fun compactRowHeightFits(availableDp: Float, requestedDp: Int): Boolean =
-        availableDp >= requestedDp
+    fun shelfPeekWidthDp(widthDp: Float): Float = widthDp - 2 * edgeDp
 }
