@@ -32,6 +32,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -241,7 +242,13 @@ fun LauncherScreen(
                         ) {
                             items(ordered, key = { it.component.flattenToString() }) { app ->
                                 val key = app.component.flattenToString()
-                                val requester = appRequesters.getOrPut(key) { FocusRequester() }
+                                val requester = remember(key) { FocusRequester() }
+                                DisposableEffect(key, requester) {
+                                    appRequesters[key] = requester
+                                    onDispose {
+                                        if (appRequesters[key] === requester) appRequesters.remove(key)
+                                    }
+                                }
                                 AppCard(
                                     app = app,
                                     requester = requester,
