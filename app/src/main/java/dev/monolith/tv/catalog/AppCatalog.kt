@@ -35,7 +35,9 @@ class AppCatalog(context: Context) {
             for (match in matches) {
                 val info = match.activityInfo ?: continue
                 val pkg = info.packageName
-                if (pkg == ownPackage || result.containsKey(pkg)) continue
+                // A parallel AMOLED review should not list another MONOLITH preview as an app.
+                if (pkg == ownPackage || pkg == "dev.monolith.tv.preview" ||
+                    pkg == "dev.monolith.tv.review" || result.containsKey(pkg)) continue
                 try {
                     result[pkg] = TvApp(
                         component = ComponentName(pkg, info.name),

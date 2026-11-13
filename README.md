@@ -34,6 +34,21 @@ gradle --no-daemon :app:testDebugUnitTest :app:lintDebug :app:assembleDebug
 
 The CI artifact is a **preview/debug APK**, with an ephemeral CI signing identity. Do not confuse it with a permanently signed update channel: different CI builds may require uninstalling the previous debug build. **Uninstalling deletes local favorites and preferences**. Never uninstall the stock TV launcher.
 
+## Safe parallel device review
+
+GitHub Actions ephemeral debug signatures can prevent `adb install -r` from
+updating the existing `dev.monolith.tv.preview` package. The bridge attempted
+0.1.3 on BOXY (private bridge issue #132) and ADB returned exit code 1;
+the existing 0.1.2 preview remained intact (verified by `app_info` in issue #133).
+
+To validate AMOLED without deleting that installation, CI now also builds a
+**parallel** review build type: `dev.monolith.tv.review`. The bridge's pinned
+`MONOLITH-TV-preview-debug` artifact contains that review APK under the
+historical filename `app-debug.apk`; the normal `dev.monolith.tv.preview`
+APK is still available separately as `MONOLITH-TV-standard-debug`.
+This is a temporary hardware-acceptance path, not a stable signing strategy.
+Never uninstall or clear existing preview data to install the review variant.
+
 ## Device smoke test
 
 Connect Android TV to Wi-Fi ADB, download the debug APK from Actions, and run:
