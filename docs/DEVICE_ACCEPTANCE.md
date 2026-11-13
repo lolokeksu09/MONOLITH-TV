@@ -63,3 +63,29 @@ Source: `BOXY_MONOLITH_AUDIT_20261113_085630.tar.gz` from the physical BOXY, And
 The preview APK certificate changes between fresh GitHub Actions runners; do not assume
 `adb install -r` is a supported upgrade path. Uninstalling the old preview deletes its
 local favorite and layout preferences. Never uninstall the stock Google TV launcher.
+
+
+## 0.1.1 live BOXY observation · 13 November 2026, 20:33–20:34 MSK
+
+These observations concern the physically installed `dev.monolith.tv.preview` version
+`0.1.1-prealpha-preview` (versionCode 2), not merely the CI artifact.
+
+- **PASS (observed):** launched the preview through the local Termux/ADB bridge.
+  A real 1920×1080 screenshot shows 11 app tiles on three complete visible rows,
+  without the earlier cropped first-row icons or last-row labels.
+- **PASS (observed):** the white D-pad focus outline was clearly visible on a
+  grid tile; captures showed focus on BrowseHere and later DUNE.
+- **NOT VERIFIED:** whether one RIGHT reliably advances exactly one cell.
+  The private bridge produced duplicate result comments for a single command,
+  indicating concurrent worker execution or an equivalent race. Screenshots
+  therefore cannot currently be attributed reliably to one key event.
+- **Bridge fix prepared:** a single-agent kernel lock and Android 11 focus-status
+  fallback were merged in `vitrum-tv-bridge` PR #85. The running Termux worker
+  must be stopped, updated and restarted before trustworthy repeat testing.
+- **NOT RUN on this controlled revision:** complete Settings / Favorites / Back
+  interaction paths, process-restart persistence, repeatable gfxinfo, power-cycle
+  behavior, same-certificate update, and stock-HOME rollback.
+
+The existing `0.1.1-prealpha` acceptance checklist above remains **open**;
+a successful screenshot and CI do not establish release acceptance. Do not
+replace the stock launcher yet.
