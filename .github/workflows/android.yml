@@ -29,6 +29,8 @@ jobs:
           SDKMANAGER=$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | head -n 1)
           test -n "$SDKMANAGER"
           "$SDKMANAGER" --install "platforms;android-36" "build-tools;35.0.0"
+      - name: Check Termux audit script syntax
+        run: bash -n scripts/BOXY_monolith_visual_audit_v2.sh
       - name: Unit tests, lint, debug APK
         shell: bash
         run: |
