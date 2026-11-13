@@ -29,7 +29,7 @@ internal data class TvLayoutSpec(
                 railDp = if (narrow) 138 else 166,
                 edgeDp = if (narrow) 14 else 26,
                 gapDp = if (narrow) 12 else 22,
-                heroDp = if (short) 96 else 132,
+                heroDp = if (short) 96 else 122,
                 tileDp = if (short) {
                     if (compactGrid) 88 else 100
                 } else {
@@ -46,7 +46,7 @@ internal data class TvLayoutSpec(
     fun threeCompactRowsFit(heightDp: Float): Boolean {
         val usable = heightDp - if (short) 28 else 44
         // Hero, two vertical gaps, apps heading and three compact rows.
-        val content = heroDp + 12 + 28 + 8 + 3 * tileDp + 2 * tileGapDp
+        val content = heroDp + 12 + 28 + 8 + 3 * tileDp + 2 * tileGapDp + 14
         return compactRowHeightFits(usable, content)
     }
 
