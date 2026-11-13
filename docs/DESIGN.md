@@ -23,13 +23,13 @@ The redesigned screen uses a deliberate two-part composition:
 
 | Role | Value |
 | --- | --- |
-| Canvas | \`#090B0E\` |
-| Left rail | \`#14171C\` |
-| App / preference surface | \`#1A1E24\` |
-| Focused surface | \`#303741\` |
-| Primary text | \`#F4F5F7\` |
-| Secondary text | \`#B0B9C4\` |
-| Focus keyline / subtle accent | \`#E1EAF4\` |
+| Canvas | `#090B0E` |
+| Left rail | `#14171C` |
+| App / preference surface | `#1A1E24` |
+| Focused surface | `#303741` |
+| Primary text | `#F4F5F7` |
+| Secondary text | `#B0B9C4` |
+| Focus keyline / subtle accent | `#E1EAF4` |
 
 Typography uses the platform sans serif, with one clear hierarchy: large
 selected app name, medium grid labels, small helpful metadata. Avoid
@@ -51,7 +51,7 @@ gratuitous tracking, all-caps eyebrow labels, texture, glow and gradients.
 ## Immutable product rules
 
 1. Installed application artwork comes directly from the actual Android
-   \`Drawable\`. No redraw, icon pack, backdrop tile, tint, clip or generated
+   `Drawable`. No redraw, icon pack, backdrop tile, tint, clip or generated
    logo is permitted. The rail uses the same source icon as the selected tile.
 2. Keep All / Favorites, MENU toggling, OK launching, Settings and Back,
    persistence, catalog loading/error handling and package visibility.
