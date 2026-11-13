@@ -30,7 +30,13 @@ jobs:
           test -n "$SDKMANAGER"
           "$SDKMANAGER" --install "platforms;android-36" "build-tools;35.0.0"
       - name: Unit tests, lint, debug APK
-        run: gradle --no-daemon :app:testDebugUnitTest :app:lintDebug :app:assembleDebug
+        shell: bash
+        run: |
+          set -o pipefail
+          if ! gradle --no-daemon :app:testDebugUnitTest :app:lintDebug :app:assembleDebug; then
+            find app/build -name 'lint-results-debug.txt' -print -exec cat {} \; || true
+            exit 1
+          fi
       - name: Upload BOXY test artifact (not a stable signature)
         uses: actions/upload-artifact@v4
         if: success()

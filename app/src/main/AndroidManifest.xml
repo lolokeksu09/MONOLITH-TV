@@ -18,6 +18,8 @@
     <application
         android:allowBackup="false"
         android:label="@string/app_name"
+        android:icon="@drawable/monolith_tv_icon"
+        android:banner="@drawable/monolith_tv_banner"
         android:supportsRtl="true"
         android:theme="@android:style/Theme.Material.NoActionBar">
 
