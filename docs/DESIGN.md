@@ -1,38 +1,73 @@
-# MONOLITH TV · Visual system v0
+# MONOLITH TV · Visual system v1
 
-## Visual thesis
+## Direction: editorial gallery, not a tile dashboard
 
-A quiet, editorial television home screen: fast recognition, no commercial feeds, no gradients pretending to be content. Premium means precision and legibility, not decorative complexity.
+The 0.1.1 preview had an oversized top toolbar, equal emphasis on every outline,
+and a large unused region below the app grid on 1920×1080 BOXY screenshots.
+The redesigned screen uses a deliberate two-part composition:
 
-## Surface and type
+- **Left information rail:** MONOLITH TV identity, actual device time, real
+  app/favorite counts, and the currently focused application's own icon/title.
+  This is a functional selection preview, not an advertising banner.
+- **Right app gallery:** quiet four-column app grid on the reference BOXY
+  viewport, larger app tiles, clean text alignment and no permanent outlines.
+  On narrower layouts it switches to three columns and a narrower rail.
+- **Top-level navigation:** All, Favorites and Settings remain explicit
+  remote-focusable controls. Focus has a bright neutral keyline plus a surface
+  change; active-tab state is deliberately more subtle.
+- **Settings:** identical visual language and selection rail, three legible
+  focusable preference rows with their real persistent values, and a single
+  Done action.
 
-- Base canvas: charcoal near-black `#0B0D10`; panels: `#16191E`.
-- Foreground: near-white `#F3F4F5`; secondary: `#AFB4BC`.
-- Focus: neutral white keyline and subtle elevation/background shift, not neon glow.
-- Type: platform sans serif; title 26–32sp, tile labels 15–18sp, supportive text 13–16sp.
-- TV 16:9 landscape first; preserve approximately 48dp safe margins on 1080p-class DP canvas.
-- Never put decorative shapes behind or over **original installed application icons**.
+## Tokens
 
-## Interaction
+| Role | Value |
+| --- | --- |
+| Canvas | \`#090B0E\` |
+| Left rail | \`#14171C\` |
+| App / preference surface | \`#1A1E24\` |
+| Focused surface | \`#303741\` |
+| Primary text | \`#F4F5F7\` |
+| Secondary text | \`#B0B9C4\` |
+| Focus keyline / subtle accent | \`#E1EAF4\` |
 
-- Every interactive control is reachable by remote navigation.
-- The focused tile must be distinguishable without relying on color alone.
-- DPAD_CENTER and ENTER trigger activation; BACK must behave predictably.
-- MENU can toggle favorite in the initial implementation; show this affordance in UI.
-- No hover-only or touch-only features. Animations <= approximately 180 ms and respect reduced motion when detectable.
+Typography uses the platform sans serif, with one clear hierarchy: large
+selected app name, medium grid labels, small helpful metadata. Avoid
+gratuitous tracking, all-caps eyebrow labels, texture, glow and gradients.
 
-## States
+## TV layout targets
 
-- Startup loading: meaningful text rather than black screen.
-- No apps: explicit empty state, access to Settings and safe exit.
-- Launch failure: non-blocking message, focus remains stable.
-- Favorite persistence: no random focus jump after reordering.
+- Reference BOXY: 1920×1080, Android 11, density 320 (logical 960×540dp).
+- 28dp horizontal and 24dp vertical outer margin on the reference class.
+- Rail width 214dp; separation 24dp; right content uses four columns,
+  11dp gaps and 116dp compact / 128dp comfortable card heights.
+- Width under 800dp: 176dp rail, 20dp outer margin, 16dp separation and
+  three columns; height under 510dp uses shorter app cards and 18dp margins.
+- The app grid scrolls independently. No new manual scrolling gesture or
+  touch requirement is introduced.
+- Preference rows and navigation controls remain D-pad focusable and readable
+  from a television viewing distance.
 
-## Hard ban on generic generated UI
+## Immutable product rules
 
-No invented KPI cards, stock photography, glassmorphism, ornament-only gradients, decorative numbering, unrelated charts, gratuitous icon packs or inconsistent focus animations.
+1. Installed application artwork comes directly from the actual Android
+   \`Drawable\`. No redraw, icon pack, backdrop tile, tint, clip or generated
+   logo is permitted. The rail uses the same source icon as the selected tile.
+2. Keep All / Favorites, MENU toggling, OK launching, Settings and Back,
+   persistence, catalog loading/error handling and package visibility.
+3. Do not change package IDs, signing, HOME selection, permissions, Android
+   services, stock launcher settings, or unrelated mobile MONOLITH code.
+4. No ads, invented recommendations, accounts, network calls or metrics.
+5. Remote-focused elements require visible focus beyond a color change.
 
-## Visual quality gates
+## Acceptance gates
 
-Measure screenshots on a real TV/display, verify each DPAD direction, font contrast, 720p/1080p/4K scaling, and app icon artwork fidelity. Visual references do not count as device tests.
-
+- **CI:** JVM unit tests, Android lint and debug APK assembly pass on the
+  exact redesigned revision.
+- **Hardware (pending until new APK is installed):** repeat 1080p screenshots
+  with All, Favorites-empty, one favorite, Settings and both grid densities;
+  verify each D-pad direction, MENU focus retention, selected-app preview,
+  Back restoration and no clipped text or icons.
+- **Limit:** a successful CI build or prior 0.1.1 hardware test does not
+  constitute a pass on the new visual revision. The GitHub Actions debug APK
+  has an ephemeral certificate and is not a supported in-place update channel.
