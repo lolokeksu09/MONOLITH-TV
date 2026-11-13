@@ -234,3 +234,56 @@ and use a separately reviewed non-destructive installation strategy.
 **NOT YET VERIFIED:** sidecar installation, actual version name, screenshot,
 D-pad interactions, layout correctness, memory and performance. Update this
 section with real-device evidence instead of treating CI as a pass.
+
+
+## 0.1.3 AMOLED live review — BOXY, 13 November 2026
+
+This section supersedes the earlier **NOT YET VERIFIED** statements only for
+the precise checks actually completed below. It is an acceptance log,
+not blanket hardware signoff.
+
+- **PASS — build provenance:** `main` commit `ee5c82c2e2603fa34cde582e08cb2a912bb3398f`,
+  GitHub Actions successful run `43493086514`, verified review artifact
+  `MONOLITH-TV-preview-debug` containing `app-debug.apk`
+  SHA-256 `2bdb70945c3554f6f7899a470e6347e019b73335e188d3ac442e77797a67ab91`
+  (9,711,041 bytes).
+- **PASS — non-destructive install:** private bridge issue #166 returned
+  `SUCCESS / install_monolith_ci` after SHA verification. Bridge #167
+  confirmed `dev.monolith.tv.review`, `0.1.3-prealpha-review`, versionCode 4.
+  #168 independently confirmed the old `dev.monolith.tv.preview`,
+  `0.1.2-prealpha-preview`, versionCode 3, was preserved.
+- **PASS — launch:** bridge #174 reported foreground Activity
+  `dev.monolith.tv.review/dev.monolith.tv.MainActivity` after dismissing
+  Google Backdrop and launching the review package.
+- **PASS — 1080p initial visual:** private screenshot #175 shows all 11
+  installed application tiles in a four-column black AMOLED gallery,
+  original Android icons, a visible high-contrast focus outline around
+  BrowseHere, and its contextual hero.
+- **PASS — D-pad RIGHT once:** bridge #176 and screenshot #177 show focus
+  moving one tile from BrowseHere to Cx Проводник. The hero title/icon
+  also changed to the corresponding app.
+- **PASS — MENU favorite add/remove in All:** bridge #178 and screenshot
+  #179 show Cx Проводник moved to the first position with star and
+  favorites count 1 while preserving its focus and hero. Bridge #180 and
+  screenshot #181 show count returning to 0, alphabetical ordering restored,
+  and the same tile still focused.
+- **NEEDS INVESTIGATION — grid-to-rail D-pad navigation:** after returning
+  to the normal All grid, the sequence LEFT, LEFT, DOWN, OK (bridge issues
+  #182-#185) led to BrowseHere opening (#186), not the intended empty
+  Favorites section. This sequence alone does not prove which directional
+  transition failed; a controlled one-key screenshot comparison is required.
+- **PASS — external app launch:** the same #186 capture shows BrowseHere
+  actually opened (although accidentally during the navigation attempt).
+  A complete launch/Back return path was *not* established by that capture.
+
+**NOT RUN / NOT PROVEN on this build:** empty Favorites navigation,
+Settings and BACK round-trip, physical remote key repeat, 720p visual
+layout, compact/comfortable setting change, persistence after restart,
+RAM / GPU frame timing, cold boot, and stock HOME rollback.
+
+**Verdict: review APK installed and basic gallery/favorite paths tested;
+NOT YET DEVICE ACCEPTED for replacing the stock HOME.** The private
+bridge screenshots remain in the private repository at
+`captures/issue-175.png`, `issue-177.png`, `issue-179.png`,
+`issue-181.png` and `issue-186.png`; they are not copied to this
+public project.
