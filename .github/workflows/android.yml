@@ -31,20 +31,33 @@ jobs:
           "$SDKMANAGER" --install "platforms;android-37.0" "build-tools;36.0.0"
       - name: Check Termux audit script syntax
         run: bash -n scripts/BOXY_monolith_visual_audit_v4.sh
-      - name: Unit tests, lint, debug APK
+      - name: Unit tests, lint, standard and review APKs
         shell: bash
         run: |
           set -o pipefail
-          if ! gradle --no-daemon :app:testDebugUnitTest :app:lintDebug :app:assembleDebug; then
-            find app/build -name 'lint-results-debug.txt' -print -exec cat {} \; || true
+          if ! gradle --no-daemon :app:testDebugUnitTest :app:lintDebug :app:assembleDebug :app:assembleReview; then
+            find app/build -name 'lint-results-debug.txt' -print -exec cat {} \\; || true
             exit 1
           fi
-      - name: Upload BOXY test artifact (not a stable signature)
+      - name: Prepare isolated BOXY review APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p app/build/outputs/bridge-review
+          cp app/build/outputs/apk/review/app-review.apk app/build/outputs/bridge-review/app-debug.apk
+      - name: Upload AMOLED sidecar review APK (retains current preview data)
         uses: actions/upload-artifact@v4
         if: success()
         with:
           name: MONOLITH-TV-preview-debug
+          path: app/build/outputs/bridge-review/app-debug.apk
+          retention-days: 7
+          if-no-files-found: error
+      - name: Upload normal preview APK (unchanged package ID)
+        uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: MONOLITH-TV-standard-debug
           path: app/build/outputs/apk/debug/app-debug.apk
           retention-days: 7
           if-no-files-found: error
-
