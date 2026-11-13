@@ -213,3 +213,24 @@ Signing: GitHub-hosted debug APKs may use distinct keys on different runs.
 If `adb install -r` fails for certificate mismatch, do not uninstall,
 clear data or overwrite the current preview. Record a blocked installation
 and use a separately reviewed non-destructive installation strategy.
+
+## 0.1.3 AMOLED review installation
+
+- Initial 0.1.3 main CI APK: `MONOLITH-TV-preview-debug`, run
+  `43490839314`, SHA-256 `bbda44d15bef8db878f5d030939516e849a20d371c110ad07cd699645dd44470`.
+- Private TV bridge install request #132 returned **ERROR: adb failed (exit 1)**.
+  The bridge did not report stderr, so the exact reason is **unconfirmed**;
+  a debug signing-certificate mismatch is plausible but not established.
+- Private bridge #133 confirmed the original `dev.monolith.tv.preview`
+  remains installed with `0.1.2-prealpha-preview`, versionCode 3.
+  Bridge #134 confirmed Android 11 / armeabi-v7a device availability.
+- To avoid deleting any preview data, CI now generates a separate
+  `dev.monolith.tv.review` package. The pinned historical bridge artifact
+  `MONOLITH-TV-preview-debug` contains the new *review* APK, while
+  `MONOLITH-TV-standard-debug` preserves the regular package separately.
+- The review variant is only for TV acceptance and does not change
+  production IDs, stock HOME, existing preview data or firmware.
+
+**NOT YET VERIFIED:** sidecar installation, actual version name, screenshot,
+D-pad interactions, layout correctness, memory and performance. Update this
+section with real-device evidence instead of treating CI as a pass.
