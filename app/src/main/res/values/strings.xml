@@ -1,12 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">MONOLITH TV</string>
-    <string name="remote_hint">OK to launch · MENU to toggle favorite</string>
+    <string name="remote_hint">OK to open · MENU to favorite</string>
+    <string name="apps_meta">Apps %1$d · Favorites %2$d</string>
+    <string name="all_apps">All</string>
+    <string name="favorites_tab">Favorites</string>
     <string name="settings">Settings</string>
     <string name="loading">Loading installed apps…</string>
-    <string name="no_apps">No launchable TV apps found. Open Settings to check installed apps.</string>
+    <string name="no_apps">No launchable apps found. Open Settings to check installed apps.</string>
+    <string name="no_favorites">No favorites yet. Select All and press MENU on an app.</string>
+    <string name="catalog_error">Could not refresh apps. Check the installed apps in Android Settings.</string>
     <string name="favorite">Favorite</string>
     <string name="app_unavailable">The app is unavailable</string>
-    <string name="settings_unavailable">Settings cannot be opened</string>
+    <string name="settings_unavailable">Android Settings cannot be opened</string>
+    <string name="launcher_settings">Launcher settings</string>
+    <string name="settings_subtitle">Display and navigation</string>
+    <string name="done">Done</string>
+    <string name="compact_grid">Compact grid</string>
+    <string name="compact_grid_description">More apps on screen without changing their icons</string>
+    <string name="favorites_first">Favorites first</string>
+    <string name="favorites_first_description">Show pinned apps first in All</string>
+    <string name="android_settings">Android Settings</string>
+    <string name="android_settings_description">Open the system settings without changing HOME</string>
+    <string name="enabled">On</string>
+    <string name="disabled">Off</string>
+    <string name="settings_saved">Changes save automatically · BACK returns to apps</string>
 </resources>
-

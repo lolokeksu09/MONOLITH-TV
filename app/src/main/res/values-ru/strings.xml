@@ -2,11 +2,27 @@
 <resources>
     <string name="app_name">MONOLITH TV</string>
     <string name="remote_hint">OK — открыть · MENU — в избранное</string>
+    <string name="apps_meta">Приложения %1$d · Избранное %2$d</string>
+    <string name="all_apps">Все</string>
+    <string name="favorites_tab">Избранное</string>
     <string name="settings">Настройки</string>
     <string name="loading">Загрузка приложений…</string>
-    <string name="no_apps">Приложения не найдены. Откройте настройки для проверки.</string>
+    <string name="no_apps">Приложения не найдены. Проверьте установленные приложения в настройках.</string>
+    <string name="no_favorites">В избранном пока пусто. Выберите «Все» и нажмите MENU на приложении.</string>
+    <string name="catalog_error">Не удалось обновить приложения. Проверьте их в настройках Android.</string>
     <string name="favorite">Избранное</string>
     <string name="app_unavailable">Не удалось открыть приложение</string>
-    <string name="settings_unavailable">Не удалось открыть настройки</string>
+    <string name="settings_unavailable">Не удалось открыть настройки Android</string>
+    <string name="launcher_settings">Настройки лаунчера</string>
+    <string name="settings_subtitle">Внешний вид и навигация</string>
+    <string name="done">Готово</string>
+    <string name="compact_grid">Компактная сетка</string>
+    <string name="compact_grid_description">Больше приложений без изменения оригинальных иконок</string>
+    <string name="favorites_first">Избранное первым</string>
+    <string name="favorites_first_description">Закреплённые приложения выше остальных в разделе «Все»</string>
+    <string name="android_settings">Настройки Android</string>
+    <string name="android_settings_description">Открыть настройки системы, не изменяя домашний экран</string>
+    <string name="enabled">Включено</string>
+    <string name="disabled">Выключено</string>
+    <string name="settings_saved">Изменения сохраняются автоматически · BACK — к приложениям</string>
 </resources>
-
