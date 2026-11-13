@@ -180,3 +180,36 @@ persistence, and a verified debug-certificate update.
 **Release status: NOT DEVICE ACCEPTED.** Keep Google TV as the HOME
 until the new APK is physically installed and the device acceptance
 checklist is repeated on the exact revision.
+
+## 0.1.3 AMOLED revision acceptance
+
+Source: `feat/amoled-tv-013` — versionCode 4, `0.1.3-prealpha-preview`.
+Baseline: actual 0.1.2 BOXY screenshot from private TV bridge issue #131,
+captured 13 November 2026. The screenshot shows all 11 installed apps
+and confirms the old design's large graphite side panel and 4-column grid.
+
+**New source changes:** true-black AMOLED, separate rail for All/Favorites/
+Settings, context-aware selected-app hero with original installed icon,
+TV focus scale/elevation/keyline animation, adaptive columns, focus-retaining
+favorite toggling, updated settings and refreshed AndroidX build toolchain.
+
+**Hardware acceptance is PENDING on the exact 0.1.3 debug APK.**
+Prior screen recordings and screenshots DO NOT validate the new UI.
+
+- [ ] CI testDebugUnitTest, lintDebug and assembleDebug PASS for final revision
+- [ ] Install the exact verified APK without uninstalling the old preview
+- [ ] Verify installed versionName/versionCode through ADB
+- [ ] New 1080p screenshot: All apps, hero, original icons and visible focus
+- [ ] Press RIGHT once: focus moves exactly one app and hero updates
+- [ ] MENU favorite add/remove: no focus jump, correct count and hero
+- [ ] Favorites empty state: section remains reachable from the D-pad
+- [ ] Settings: focus, compact mode toggle, restore and BACK
+- [ ] Android Settings round-trip; launching a real app and returning
+- [ ] Check 720p if a test surface is accessible; otherwise NOT RUN
+- [ ] Check cold start, preference persistence, RAM and repeated gfxinfo
+- [ ] Confirm stock Google TV remains HOME and is usable
+
+Signing: GitHub-hosted debug APKs may use distinct keys on different runs.
+If `adb install -r` fails for certificate mismatch, do not uninstall,
+clear data or overwrite the current preview. Record a blocked installation
+and use a separately reviewed non-destructive installation strategy.
