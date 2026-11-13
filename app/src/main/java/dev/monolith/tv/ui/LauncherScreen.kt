@@ -8,10 +8,12 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -45,7 +47,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -59,12 +63,16 @@ import kotlinx.coroutines.delay
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
-private val Background = Color(0xFF0B0D10)
-private val TileBackground = Color(0xFF171A1E)
-private val TileFocused = Color(0xFF262D33)
-private val Primary = Color(0xFFF3F4F5)
-private val Secondary = Color(0xFFABB1B9)
-private val Border = Color(0xFF393D43)
+// MONOLITH TV · editorial gallery. Quiet surfaces, one unmistakable focus state.
+// The installed application's own Drawable is never cropped, tinted or replaced.
+private val Canvas = Color(0xFF090B0E)
+private val Rail = Color(0xFF14171C)
+private val Surface = Color(0xFF1A1E24)
+private val SurfaceFocused = Color(0xFF303741)
+private val Primary = Color(0xFFF4F5F7)
+private val Secondary = Color(0xFFB0B9C4)
+private val Accent = Color(0xFFE1EAF4)
+private val Hairline = Color(0xFF303741)
 
 @Composable
 fun LauncherScreen(
@@ -93,6 +101,10 @@ fun LauncherScreen(
     val knownFavoriteCount = remember(apps, favoritePackages) {
         apps.count { it.packageName in favoritePackages }
     }
+    val featured = remember(apps, ordered, lastFocusedKey) {
+        apps.firstOrNull { it.component.flattenToString() == lastFocusedKey }
+            ?: ordered.firstOrNull()
+    }
 
     val gridState = rememberLazyGridState()
     val appRequesters = remember { mutableMapOf<String, FocusRequester>() }
@@ -111,8 +123,8 @@ fun LauncherScreen(
         settingsVisible = false
     }
 
-    // Restore the same component after favorite reordering and after closing
-    // settings. A moved or removed tile is scrolled into view before focus.
+    // Keep the selected application after MENU reorders the grid and after
+    // returning from settings. A removed item is never focused.
     LaunchedEffect(loading, settingsVisible, onlyFavorites, ordered) {
         if (loading || settingsVisible) return@LaunchedEffect
 
@@ -139,107 +151,149 @@ fun LauncherScreen(
         pendingFocusKey = null
     }
 
-    if (settingsVisible) {
-        SettingsScreen(
-            options = options,
-            onOptionsChange = onOptionsChange,
-            onClose = { settingsVisible = false },
-            onOpenAndroidSettings = onOpenAndroidSettings
-        )
-    } else {
-        Column(
+    BoxWithConstraints(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Canvas)
+    ) {
+        val narrow = maxWidth < 800.dp
+        val short = maxHeight < 510.dp
+        val railWidth = if (narrow) 176.dp else 214.dp
+        val sideGap = if (narrow) 16.dp else 24.dp
+        val edge = if (narrow) 20.dp else 28.dp
+        val tileHeight = if (options.compactGrid) {
+            if (short) 104.dp else 116.dp
+        } else {
+            if (short) 116.dp else 128.dp
+        }
+
+        Row(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Background)
-                .padding(horizontal = 46.dp, vertical = 30.dp)
+                .padding(horizontal = edge, vertical = if (short) 18.dp else 24.dp),
+            horizontalArrangement = Arrangement.spacedBy(sideGap)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column {
-                    Text(
-                        stringResource(R.string.app_name),
-                        color = Primary,
-                        fontSize = 29.sp,
-                        fontWeight = FontWeight.SemiBold
+            BrandRail(
+                modifier = Modifier
+                    .width(railWidth)
+                    .fillMaxHeight(),
+                clock = clock,
+                meta = if (settingsVisible) {
+                    stringResource(R.string.settings_subtitle)
+                } else {
+                    stringResource(R.string.apps_meta, apps.size, knownFavoriteCount)
+                },
+                app = if (settingsVisible) null else featured,
+                favorite = featured?.packageName in favoritePackages,
+                title = if (settingsVisible) {
+                    stringResource(R.string.launcher_settings)
+                } else {
+                    stringResource(
+                        if (onlyFavorites) R.string.favorites_tab else R.string.apps_heading
                     )
-                    Spacer(Modifier.height(5.dp))
-                    Text(
-                        stringResource(R.string.apps_meta, apps.size, knownFavoriteCount),
-                        color = Secondary,
-                        fontSize = 13.sp
-                    )
-                    Text(stringResource(R.string.remote_hint), color = Secondary, fontSize = 13.sp)
-                }
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(clock, color = Primary, fontSize = 23.sp)
-                    Spacer(Modifier.width(18.dp))
-                    ActionTile(
-                        stringResource(R.string.all_apps),
-                        onClick = { onlyFavorites = false },
-                        selected = !onlyFavorites,
-                        requester = allRequester
-                    )
-                    Spacer(Modifier.width(8.dp))
-                    ActionTile(
-                        stringResource(R.string.favorites_tab),
-                        onClick = { onlyFavorites = true },
-                        selected = onlyFavorites,
-                        requester = favoritesRequester
-                    )
-                    Spacer(Modifier.width(8.dp))
-                    ActionTile(
-                        stringResource(R.string.settings),
-                        onClick = { settingsVisible = true },
-                        requester = settingsRequester
-                    )
-                }
-            }
+                },
+                footer = stringResource(
+                    if (settingsVisible) R.string.settings_saved else R.string.remote_hint
+                ),
+                compact = narrow
+            )
 
-            Spacer(Modifier.height(20.dp))
-            when {
-                loading -> Text(
-                    stringResource(R.string.loading),
-                    color = Secondary, fontSize = 18.sp
+            if (settingsVisible) {
+                SettingsScreen(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight(),
+                    options = options,
+                    onOptionsChange = onOptionsChange,
+                    onClose = { settingsVisible = false },
+                    onOpenAndroidSettings = onOpenAndroidSettings
                 )
-                ordered.isEmpty() -> {
-                    Text(
-                        stringResource(
-                            if (catalogError) R.string.catalog_error
-                            else if (onlyFavorites) R.string.no_favorites
-                            else R.string.no_apps
-                        ),
-                        color = Primary,
-                        fontSize = 18.sp
-                    )
-                }
-                else -> LazyVerticalGrid(
-                    columns = GridCells.Adaptive(
-                        minSize = if (options.compactGrid) 154.dp else 170.dp
-                    ),
-                    state = gridState,
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(bottom = 6.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+            } else {
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
                 ) {
-                    items(ordered, key = { it.component.flattenToString() }) { app ->
-                        val key = app.component.flattenToString()
-                        val requester = appRequesters.getOrPut(key) { FocusRequester() }
-                        AppTile(
-                            app = app,
-                            requester = requester,
-                            compact = options.compactGrid,
-                            isFavorite = app.packageName in favoritePackages,
-                            onFocused = { lastFocusedKey = key },
-                            onLaunch = { onLaunch(app) },
-                            onToggleFavorite = {
-                                pendingFocusKey = key
-                                onToggleFavorite(app.packageName)
-                            }
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = stringResource(
+                                if (onlyFavorites) R.string.favorites_tab else R.string.apps_heading
+                            ),
+                            color = Primary,
+                            fontSize = if (narrow) 22.sp else 27.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.weight(1f)
                         )
+                        Spacer(Modifier.width(10.dp))
+                        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                            NavAction(
+                                title = stringResource(R.string.all_apps),
+                                onClick = { onlyFavorites = false },
+                                selected = !onlyFavorites,
+                                requester = allRequester,
+                                narrow = narrow
+                            )
+                            NavAction(
+                                title = stringResource(R.string.favorites_tab),
+                                onClick = { onlyFavorites = true },
+                                selected = onlyFavorites,
+                                requester = favoritesRequester,
+                                narrow = narrow
+                            )
+                            NavAction(
+                                title = stringResource(R.string.settings),
+                                onClick = { settingsVisible = true },
+                                requester = settingsRequester,
+                                narrow = narrow
+                            )
+                        }
+                    }
+
+                    Spacer(Modifier.height(if (short) 12.dp else 18.dp))
+
+                    when {
+                        loading -> MessageState(stringResource(R.string.loading))
+                        ordered.isEmpty() -> MessageState(
+                            stringResource(
+                                if (catalogError) R.string.catalog_error
+                                else if (onlyFavorites) R.string.no_favorites
+                                else R.string.no_apps
+                            )
+                        )
+                        else -> LazyVerticalGrid(
+                            columns = GridCells.Fixed(if (narrow) 3 else 4),
+                            state = gridState,
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(bottom = 10.dp),
+                            horizontalArrangement = Arrangement.spacedBy(11.dp),
+                            verticalArrangement = Arrangement.spacedBy(11.dp)
+                        ) {
+                            items(ordered, key = { it.component.flattenToString() }) { app ->
+                                val key = app.component.flattenToString()
+                                val requester = appRequesters.getOrPut(key) { FocusRequester() }
+                                AppTile(
+                                    app = app,
+                                    requester = requester,
+                                    height = tileHeight,
+                                    compact = options.compactGrid,
+                                    isFavorite = app.packageName in favoritePackages,
+                                    onFocused = { lastFocusedKey = key },
+                                    onLaunch = { onLaunch(app) },
+                                    onToggleFavorite = {
+                                        pendingFocusKey = key
+                                        onToggleFavorite(app.packageName)
+                                    }
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -248,9 +302,144 @@ fun LauncherScreen(
 }
 
 @Composable
+private fun BrandRail(
+    modifier: Modifier,
+    clock: String,
+    meta: String,
+    app: TvApp?,
+    favorite: Boolean,
+    title: String,
+    footer: String,
+    compact: Boolean
+) {
+    Column(
+        modifier = modifier
+            .background(Rail, RoundedCornerShape(18.dp))
+            .padding(horizontal = if (compact) 17.dp else 22.dp, vertical = 20.dp),
+        verticalArrangement = Arrangement.SpaceBetween
+    ) {
+        Column {
+            Text(
+                text = stringResource(R.string.app_name),
+                color = Primary,
+                fontSize = if (compact) 20.sp else 25.sp,
+                fontWeight = FontWeight.Bold,
+                letterSpacing = (-0.8).sp,
+                maxLines = 1
+            )
+            Spacer(Modifier.height(17.dp))
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(1.dp)
+                    .background(Hairline)
+            )
+            Spacer(Modifier.height(21.dp))
+            Text(
+                text = clock,
+                color = Primary,
+                fontSize = if (compact) 38.sp else 44.sp,
+                fontWeight = FontWeight.Light
+            )
+            Spacer(Modifier.height(3.dp))
+            Text(
+                text = meta,
+                color = Secondary,
+                fontSize = if (compact) 11.sp else 12.sp,
+                lineHeight = 17.sp,
+                maxLines = 3
+            )
+        }
+
+        Column {
+            if (app != null) {
+                Text(
+                    text = stringResource(R.string.selected_now),
+                    color = Secondary,
+                    fontSize = 12.sp
+                )
+                Spacer(Modifier.height(14.dp))
+                OriginalAppIcon(app, Modifier.size(if (compact) 60.dp else 72.dp))
+                Spacer(Modifier.height(14.dp))
+                Text(
+                    text = app.title,
+                    color = Primary,
+                    fontSize = if (compact) 22.sp else 25.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    lineHeight = if (compact) 26.sp else 30.sp,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+                if (favorite) {
+                    Spacer(Modifier.height(5.dp))
+                    Text(
+                        text = stringResource(R.string.favorite),
+                        color = Accent,
+                        fontSize = 12.sp
+                    )
+                }
+            } else {
+                Text(
+                    text = title,
+                    color = Primary,
+                    fontSize = if (compact) 22.sp else 25.sp,
+                    lineHeight = 29.sp,
+                    maxLines = 3
+                )
+            }
+        }
+
+        Text(
+            text = footer,
+            color = Secondary,
+            fontSize = if (compact) 11.sp else 12.sp,
+            lineHeight = 18.sp,
+            maxLines = 4
+        )
+    }
+}
+
+@Composable
+private fun OriginalAppIcon(app: TvApp, modifier: Modifier) {
+    // The image source is the installed application's actual Drawable.
+    // No new badges, forced icon backgrounds, clipping or color transforms.
+    AndroidView(
+        factory = { context ->
+            ImageView(context).apply {
+                scaleType = ImageView.ScaleType.FIT_CENTER
+                adjustViewBounds = true
+            }
+        },
+        update = { view ->
+            view.setImageDrawable(
+                app.originalIcon.constantState?.newDrawable()?.mutate() ?: app.originalIcon
+            )
+        },
+        modifier = modifier
+    )
+}
+
+@Composable
+private fun MessageState(message: String) {
+    Box(
+        modifier = Modifier.fillMaxSize().padding(24.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = message,
+            color = Primary,
+            fontSize = 20.sp,
+            lineHeight = 29.sp,
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
+@Composable
 private fun AppTile(
     app: TvApp,
     requester: FocusRequester,
+    height: Dp,
     compact: Boolean,
     isFavorite: Boolean,
     onFocused: () -> Unit,
@@ -258,12 +447,13 @@ private fun AppTile(
     onToggleFavorite: () -> Unit
 ) {
     var focused by remember { mutableStateOf(false) }
-    val shape = RoundedCornerShape(10.dp)
+    val shape = RoundedCornerShape(14.dp)
     val favoriteLabel = stringResource(R.string.favorite)
 
     Column(
         modifier = Modifier
-            .height(if (compact) 96.dp else 118.dp)
+            .fillMaxWidth()
+            .height(height)
             .focusRequester(requester)
             .onFocusChanged {
                 focused = it.isFocused
@@ -277,46 +467,40 @@ private fun AppTile(
                     true
                 } else false
             }
+            .background(if (focused) SurfaceFocused else Surface, shape)
             .border(
-                width = if (focused) 2.dp else 1.dp,
-                color = if (focused) Primary else Border,
+                width = if (focused) 2.dp else 0.dp,
+                color = if (focused) Accent else Color.Transparent,
                 shape = shape
             )
-            .background(if (focused) TileFocused else TileBackground, shape)
             .semantics {
                 contentDescription = app.title + if (isFavorite) " " + favoriteLabel else ""
             }
             .clickable(onClick = onLaunch)
-            .padding(horizontal = 12.dp, vertical = if (compact) 7.dp else 9.dp),
-        horizontalAlignment = Alignment.Start,
-        verticalArrangement = Arrangement.SpaceBetween
+            .padding(horizontal = 14.dp, vertical = 11.dp),
+        horizontalAlignment = Alignment.Start
     ) {
-        // Draw installed app-provided artwork unchanged. No tint, clip or mask.
-        AndroidView(
-            factory = { viewContext ->
-                ImageView(viewContext).apply {
-                    scaleType = ImageView.ScaleType.FIT_CENTER
-                    adjustViewBounds = true
-                }
-            },
-            update = { view ->
-                view.setImageDrawable(
-                    app.originalIcon.constantState?.newDrawable()?.mutate() ?: app.originalIcon
-                )
-            },
-            modifier = Modifier.size(if (compact) 42.dp else 52.dp)
-        )
-        Column {
-            Text(
-                app.title,
-                color = Primary,
-                fontSize = if (compact) 14.sp else 16.sp,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+        Box(
+            modifier = Modifier.fillMaxWidth().weight(1f),
+            contentAlignment = Alignment.CenterStart
+        ) {
+            OriginalAppIcon(
+                app,
+                Modifier.size(if (compact) 54.dp else 62.dp)
             )
+        }
+        Text(
+            text = app.title,
+            color = Primary,
+            fontSize = if (compact) 15.sp else 16.sp,
+            fontWeight = if (focused) FontWeight.SemiBold else FontWeight.Medium,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+        if (isFavorite) {
             Text(
-                if (isFavorite) favoriteLabel else " ",
-                color = Secondary,
+                text = favoriteLabel,
+                color = Accent,
                 fontSize = 11.sp,
                 maxLines = 1
             )
@@ -326,6 +510,7 @@ private fun AppTile(
 
 @Composable
 private fun SettingsScreen(
+    modifier: Modifier,
     options: LauncherOptions,
     onOptionsChange: (LauncherOptions) -> Unit,
     onClose: () -> Unit,
@@ -337,67 +522,51 @@ private fun SettingsScreen(
         doneRequester.requestFocus()
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Background)
-            .padding(horizontal = 46.dp, vertical = 32.dp)
-    ) {
+    Column(modifier = modifier) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().height(56.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column {
-                Text(
-                    stringResource(R.string.launcher_settings),
-                    color = Primary, fontSize = 29.sp, fontWeight = FontWeight.SemiBold
-                )
-                Text(
-                    stringResource(R.string.settings_subtitle),
-                    color = Secondary, fontSize = 14.sp
-                )
-            }
-            ActionTile(
-                stringResource(R.string.done),
+            Text(
+                text = stringResource(R.string.settings),
+                color = Primary,
+                fontSize = 27.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+            NavAction(
+                title = stringResource(R.string.done),
                 onClick = onClose,
                 requester = doneRequester
             )
         }
-        Spacer(Modifier.height(26.dp))
+        Spacer(Modifier.height(18.dp))
         PreferenceTile(
             title = stringResource(R.string.compact_grid),
             description = stringResource(R.string.compact_grid_description),
-            value = stringResource(
-                if (options.compactGrid) R.string.enabled else R.string.disabled
-            ),
-            onClick = {
-                onOptionsChange(options.copy(compactGrid = !options.compactGrid))
-            }
+            value = stringResource(if (options.compactGrid) R.string.enabled else R.string.disabled),
+            onClick = { onOptionsChange(options.copy(compactGrid = !options.compactGrid)) }
         )
-        Spacer(Modifier.height(10.dp))
+        Spacer(Modifier.height(12.dp))
         PreferenceTile(
             title = stringResource(R.string.favorites_first),
             description = stringResource(R.string.favorites_first_description),
-            value = stringResource(
-                if (options.favoritesFirst) R.string.enabled else R.string.disabled
-            ),
-            onClick = {
-                onOptionsChange(options.copy(favoritesFirst = !options.favoritesFirst))
-            }
+            value = stringResource(if (options.favoritesFirst) R.string.enabled else R.string.disabled),
+            onClick = { onOptionsChange(options.copy(favoritesFirst = !options.favoritesFirst)) }
         )
-        Spacer(Modifier.height(10.dp))
+        Spacer(Modifier.height(12.dp))
         PreferenceTile(
             title = stringResource(R.string.android_settings),
             description = stringResource(R.string.android_settings_description),
             value = "",
             onClick = onOpenAndroidSettings
         )
-        Spacer(Modifier.height(20.dp))
+        Spacer(Modifier.height(24.dp))
         Text(
-            stringResource(R.string.settings_saved),
+            text = stringResource(R.string.settings_saved),
             color = Secondary,
-            fontSize = 13.sp
+            fontSize = 13.sp,
+            lineHeight = 19.sp
         )
     }
 }
@@ -410,61 +579,90 @@ private fun PreferenceTile(
     onClick: () -> Unit
 ) {
     var focused by remember { mutableStateOf(false) }
-    val shape = RoundedCornerShape(10.dp)
+    val shape = RoundedCornerShape(14.dp)
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(86.dp)
+            .height(98.dp)
             .onFocusChanged { focused = it.isFocused }
+            .background(if (focused) SurfaceFocused else Surface, shape)
             .border(
-                if (focused) 2.dp else 1.dp,
-                if (focused) Primary else Border,
-                shape
+                width = if (focused) 2.dp else 0.dp,
+                color = if (focused) Accent else Color.Transparent,
+                shape = shape
             )
-            .background(if (focused) TileFocused else TileBackground, shape)
             .clickable(onClick = onClick)
-            .padding(horizontal = 20.dp),
+            .padding(horizontal = 22.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(modifier = Modifier.weight(1f)) {
-            Text(title, color = Primary, fontSize = 18.sp, fontWeight = FontWeight.Medium)
-            Spacer(Modifier.height(4.dp))
-            Text(description, color = Secondary, fontSize = 13.sp)
+            Text(
+                text = title,
+                color = Primary,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Spacer(Modifier.height(5.dp))
+            Text(
+                text = description,
+                color = Secondary,
+                fontSize = 13.sp,
+                lineHeight = 18.sp,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
         }
         if (value.isNotEmpty()) {
-            Spacer(Modifier.width(20.dp))
-            Text(value, color = if (focused) Primary else Secondary, fontSize = 14.sp)
+            Spacer(Modifier.width(14.dp))
+            Text(
+                text = value,
+                color = if (focused) Primary else Secondary,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Medium
+            )
         }
     }
 }
 
 @Composable
-private fun ActionTile(
+private fun NavAction(
     title: String,
     onClick: () -> Unit,
     selected: Boolean = false,
-    requester: FocusRequester? = null
+    requester: FocusRequester? = null,
+    narrow: Boolean = false
 ) {
     var focused by remember { mutableStateOf(false) }
-    val shape = RoundedCornerShape(10.dp)
+    val shape = RoundedCornerShape(12.dp)
     Box(
         modifier = Modifier
             .then(if (requester == null) Modifier else Modifier.focusRequester(requester))
             .onFocusChanged { focused = it.isFocused }
-            .border(
-                if (focused) 2.dp else 1.dp,
-                if (focused) Primary else if (selected) Secondary else Border,
+            .background(
+                if (focused) SurfaceFocused else if (selected) Surface else Color.Transparent,
                 shape
             )
-            .background(
-                if (focused || selected) TileFocused else TileBackground,
-                shape
+            .border(
+                width = if (focused) 2.dp else 0.dp,
+                color = if (focused) Accent else Color.Transparent,
+                shape = shape
             )
             .clickable(onClick = onClick)
-            .padding(horizontal = 15.dp, vertical = 11.dp),
+            .padding(
+                horizontal = if (narrow) 10.dp else 14.dp,
+                vertical = 11.dp
+            ),
         contentAlignment = Alignment.Center
     ) {
-        Text(title, color = if (selected || focused) Primary else Secondary, fontSize = 15.sp)
+        Text(
+            text = title,
+            color = if (selected || focused) Primary else Secondary,
+            fontSize = if (narrow) 13.sp else 14.sp,
+            fontWeight = if (selected || focused) FontWeight.SemiBold else FontWeight.Medium,
+            maxLines = 1
+        )
     }
 }
 
