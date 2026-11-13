@@ -35,7 +35,7 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          if ! gradle --no-daemon :app:testDebugUnitTest :app:lintDebug :app:assembleDebug :app:assembleReview; then
+          if ! gradle --no-daemon :app:testDebugUnitTest :app:lintDebug :app:assembleDebug :app:assembleReview :app:assembleCinema; then
             find app/build -name 'lint-results-debug.txt' -print -exec cat {} + || true
             exit 1
           fi
@@ -44,8 +44,8 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p app/build/outputs/bridge-review
-          cp app/build/outputs/apk/review/app-review.apk app/build/outputs/bridge-review/app-debug.apk
-      - name: Upload AMOLED sidecar review APK (retains current preview data)
+          cp app/build/outputs/apk/cinema/app-cinema.apk app/build/outputs/bridge-review/app-debug.apk
+      - name: Upload CINEMA 0.1.4 APK (preserve old 0.1.3 review)
         uses: actions/upload-artifact@v4
         if: success()
         with:
@@ -59,5 +59,13 @@ jobs:
         with:
           name: MONOLITH-TV-standard-debug
           path: app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 7
+          if-no-files-found: error
+      - name: Upload previous review package build
+        uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: MONOLITH-TV-review-debug
+          path: app/build/outputs/apk/review/app-review.apk
           retention-days: 7
           if-no-files-found: error
