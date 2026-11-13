@@ -101,8 +101,8 @@ fun LauncherScreen(
     val knownFavoriteCount = remember(apps, favoritePackages) {
         apps.count { it.packageName in favoritePackages }
     }
-    val featured = remember(apps, ordered, lastFocusedKey) {
-        apps.firstOrNull { it.component.flattenToString() == lastFocusedKey }
+    val featured = remember(ordered, lastFocusedKey) {
+        ordered.firstOrNull { it.component.flattenToString() == lastFocusedKey }
             ?: ordered.firstOrNull()
     }
 
