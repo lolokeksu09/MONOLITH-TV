@@ -15,8 +15,8 @@ android {
         applicationId = "dev.monolith.tv"
         minSdk = 26
         targetSdk = 35
-        versionCode = 4
-        versionName = "0.1.3-prealpha"
+        versionCode = 5
+        versionName = "0.1.4-prealpha"
     }
 
     buildTypes {
@@ -31,6 +31,13 @@ android {
             initWith(getByName("debug"))
             applicationIdSuffix = ".review"
             versionNameSuffix = "-review"
+        }
+        create("cinema") {
+            // Install next to the 0.1.2 preview and 0.1.3 review; ephemeral
+            // CI debug certificates cannot reliably update prior variants.
+            initWith(getByName("debug"))
+            applicationIdSuffix = ".cinema"
+            versionNameSuffix = "-cinema"
         }
         release {
             // No production release is distributed until dedicated stable signing exists.
