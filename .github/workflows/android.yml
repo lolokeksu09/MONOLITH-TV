@@ -36,7 +36,7 @@ jobs:
         run: |
           set -o pipefail
           if ! gradle --no-daemon :app:testDebugUnitTest :app:lintDebug :app:assembleDebug :app:assembleReview; then
-            find app/build -name 'lint-results-debug.txt' -print -exec cat {} \\; || true
+            find app/build -name 'lint-results-debug.txt' -print -exec cat {} + || true
             exit 1
           fi
       - name: Prepare isolated BOXY review APK
