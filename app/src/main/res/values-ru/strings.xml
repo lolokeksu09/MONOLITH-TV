@@ -26,8 +26,8 @@
     <string name="launcher_settings">Настройки лаунчера</string>
     <string name="settings_subtitle">Внешний вид и навигация</string>
     <string name="done">Готово</string>
-    <string name="compact_grid">Компактная сетка</string>
-    <string name="compact_grid_description">Больше приложений без изменения оригинальных иконок</string>
+    <string name="compact_grid">Компактная полка</string>
+    <string name="compact_grid_description">Больше приложений в горизонтальной полке без изменения иконок</string>
     <string name="favorites_first">Избранное первым</string>
     <string name="favorites_first_description">Закреплённые приложения выше остальных в разделе «Все»</string>
     <string name="android_settings">Настройки Android</string>
