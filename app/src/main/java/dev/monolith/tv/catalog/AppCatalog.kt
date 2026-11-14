@@ -38,7 +38,8 @@ class AppCatalog(context: Context) {
                 // A parallel AMOLED review should not list another MONOLITH preview as an app.
                 if (pkg == ownPackage || pkg == "dev.monolith.tv.preview" ||
                     pkg == "dev.monolith.tv.review" ||
-                    pkg == "dev.monolith.tv.cinema" || result.containsKey(pkg)) continue
+                    pkg == "dev.monolith.tv.cinema" ||
+                    pkg == "dev.monolith.tv.cinemafix" || result.containsKey(pkg)) continue
                 try {
                     result[pkg] = TvApp(
                         component = ComponentName(pkg, info.name),
