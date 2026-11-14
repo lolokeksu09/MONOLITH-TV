@@ -26,8 +26,8 @@
     <string name="launcher_settings">Launcher settings</string>
     <string name="settings_subtitle">Display and navigation</string>
     <string name="done">Done</string>
-    <string name="compact_grid">Compact grid</string>
-    <string name="compact_grid_description">More apps on screen without changing their icons</string>
+    <string name="compact_grid">Compact dock</string>
+    <string name="compact_grid_description">Fit more apps in the horizontal dock without altering icons</string>
     <string name="favorites_first">Favorites first</string>
     <string name="favorites_first_description">Show pinned apps first in All</string>
     <string name="android_settings">Android Settings</string>

@@ -31,7 +31,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -128,7 +127,9 @@ fun LauncherScreen(
     }
 
     val shelfState = rememberLazyListState()
-    val tileRequesters = remember { mutableMapOf<String, FocusRequester>() }
+    // A focus request can arrive before LazyRow composes the target tile.
+    // Keep the target as Compose state until that tile actually attaches.
+    var requestedDockFocusKey by remember { mutableStateOf<String?>(null) }
     val allTab = remember { FocusRequester() }
     val favoritesTab = remember { FocusRequester() }
     val settingsTab = remember { FocusRequester() }
@@ -141,8 +142,7 @@ fun LauncherScreen(
     }
 
     fun returnToDock() {
-        val key = featured?.component?.flattenToString() ?: return
-        tileRequesters[key]?.requestFocus()
+        requestedDockFocusKey = featured?.component?.flattenToString()
     }
 
     BackHandler(enabled = settingsVisible) { settingsVisible = false }
@@ -158,15 +158,13 @@ fun LauncherScreen(
             restoreKey = null
             return@LaunchedEffect
         }
-        val key = (restoreKey ?: focusedKey)
-            ?.takeIf { candidate ->
-                visible.any { it.component.flattenToString() == candidate }
-            } ?: visible.first().component.flattenToString()
+        val key = resolveDockFocusKey(
+            visible.map { it.component.flattenToString() },
+            restoreKey ?: focusedKey
+        ) ?: return@LaunchedEffect
         val index = visible.indexOfFirst { it.component.flattenToString() == key }
         shelfState.scrollToItem(index)
-        withFrameNanos { }
-        withFrameNanos { }
-        tileRequesters[key]?.requestFocus()
+        requestedDockFocusKey = key
         restoreKey = null
     }
 
@@ -283,11 +281,13 @@ fun LauncherScreen(
 
                 when {
                     loading -> DockMessage(stringResource(R.string.loading))
+                    // The feature stage already explains empty Favorites.
+                    // Showing the same paragraph twice was distracting.
+                    visible.isEmpty() && favoritesOnly && !catalogError ->
+                        Spacer(Modifier.height(spec.shelfDp.dp))
                     visible.isEmpty() -> DockMessage(
                         stringResource(
-                            if (catalogError) R.string.catalog_error
-                            else if (favoritesOnly) R.string.no_favorites
-                            else R.string.no_apps
+                            if (catalogError) R.string.catalog_error else R.string.no_apps
                         )
                     )
                     else -> LazyRow(
@@ -303,11 +303,14 @@ fun LauncherScreen(
                         items(visible, key = { it.component.flattenToString() }) { app ->
                             val key = app.component.flattenToString()
                             val requester = remember(key) { FocusRequester() }
-                            DisposableEffect(key, requester) {
-                                tileRequesters[key] = requester
-                                onDispose {
-                                    if (tileRequesters[key] === requester) {
-                                        tileRequesters.remove(key)
+                            LaunchedEffect(requestedDockFocusKey, requester) {
+                                if (requestedDockFocusKey == key) {
+                                    // Request only after this tile has entered the tree.
+                                    // No arbitrary timed delay or detached requester.
+                                    withFrameNanos { }
+                                    requester.requestFocus()
+                                    if (requestedDockFocusKey == key) {
+                                        requestedDockFocusKey = null
                                     }
                                 }
                             }
