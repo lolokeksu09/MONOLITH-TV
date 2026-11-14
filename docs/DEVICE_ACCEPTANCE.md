@@ -318,3 +318,47 @@ public project.
 acceptance BLOCKED by all-black device screenshots, including stock HOME.**
 A screen wake / HDMI-active state is needed before repeating screenshot
 and D-pad tests. No default HOME change, uninstall or app data clear.
+
+## 0.1.4 Cinema resumed BOXY visual audit — 14 November 2026
+
+This is a **new physical-device audit**, following the user's restoration
+of the TV/HDMI active state. It supersedes the older blanket
+"visual capture blocked" finding for the checks performed below.
+
+- **PASS — screen capture restored:** private bridge issue #219 launched
+  `dev.monolith.tv.cinema`; #220 confirmed the foreground
+  `dev.monolith.tv.cinema/dev.monolith.tv.MainActivity`; screenshot #221
+  is a real 1920×1080 render showing the full-width feature stage, top
+  navigation and horizontal icon dock. Original Android app icons appear
+  at full size. This is visibly different from 0.1.3's multi-row grid.
+- **DEFECT — focus on first launch:** screenshot #221 showed no visible dock
+  focus. First RIGHT (#222) focused the All top tab (#223) instead of the
+  next app. DOWN (#224) explicitly focused BrowseHere in the dock (#225).
+- **PASS — dock traversal after focus established:** RIGHT (#226) moved focus
+  exactly once from BrowseHere to Cx Проводник, and feature stage title/icon
+  updated accordingly (screenshot #227).
+- **PASS — MENU favorite toggle:** MENU (#228) pinned Cx Проводник, moved
+  it first and retained selected focus (screenshot #229). MENU (#230)
+  unpinned it and restored the original sorting (screenshot #231).
+- **PASS — Favorites empty state:** UP (#232) focused All (#233);
+  RIGHT+OK (#234–#235) opened empty Favorites with a clear focused tab
+  and `0` count (screenshot #236). **UX issue:** the empty-state
+  guidance is repeated in hero and dock.
+- **PASS — Settings view:** RIGHT+OK (#237–#238) opened Settings; the first
+  option had visible focus (screenshot #239).
+- **PASS — setting toggled:** OK (#240) switched compactGrid from Disabled
+  to Enabled (screenshot #241); a subsequent OK (#242) reverted it.
+  **UX issue:** UI still calls it "Compact grid", despite Cinema using
+  a horizontal app dock. Underlying key is intentionally unchanged.
+- **PARTIAL — BACK and connection:** BACK key (#243) was successfully sent,
+  but follow-up screenshot #244 failed. Read-only focus_status #245,
+  screenshot #246 and device_summary #247 subsequently reported ADB errors.
+  Do not treat BACK-to-app screenshot as validated, and do not attribute
+  the transport failure to MONOLITH without evidence.
+- **NOT RUN:** 720p, extended frame pacing/RAM, HDMI remote repeat,
+  power cycle, Android system Settings round-trip, stable signing upgrades.
+
+**Status: Cinema visual layout and core dock/favorite/settings flows
+VERIFIED on BOXY, but NOT FULLY DEVICE ACCEPTED.** Track the initial
+focus defect and UI-copy issues in GitHub Issue #7. Stock HOME and
+previous MONOLITH installations were not changed.
