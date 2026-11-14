@@ -362,3 +362,57 @@ of the TV/HDMI active state. It supersedes the older blanket
 VERIFIED on BOXY, but NOT FULLY DEVICE ACCEPTED.** Track the initial
 focus defect and UI-copy issues in GitHub Issue #7. Stock HOME and
 previous MONOLITH installations were not changed.
+
+
+## 0.1.4.1 Cinema focus-fix acceptance — BOXY, 14 November 2026
+
+This record covers the **newly installed** source revision, not the old
+0.1.4 Cinema screenshots. Earlier findings above remain historical.
+
+- **PASS — reproducible build:** `main` squash commit
+  `b4abf580e136435b65fd14dfcf0b3e42310271d3`,
+  GitHub Actions `43560032023` completed SUCCESS. The signed
+  `app-debug.apk` from allowlisted `MONOLITH-TV-preview-debug` artifact
+  `14099913524` is 9,729,769 bytes with SHA-256
+  `345f62d13947317139b039e9d29103478409804a919185635320af0b487c4d35`.
+- **PASS — safe installation:** private bridge #254 confirmed the
+  SHA-pinned `install_monolith_ci` completed successfully. #255 confirmed
+  `dev.monolith.tv.cinemafix`, `0.1.4.1-prealpha-cinemafix`,
+  versionCode 6. The first launch encountered system Google Backdrop
+  (#257), resolved with BACK (#259) and relaunch (#260); #261 then
+  confirmed CinemaFix MainActivity in foreground.
+- **PASS — first-launch D-pad focus regression:** private screenshot
+  `captures/issue-262.png` showed BrowseHere **already focused in the
+  horizontal dock**, before sending any D-pad navigation key. This
+  fixes the 0.1.4 first-launch no-focus case (#221–#225).
+- **PASS — first RIGHT:** one RIGHT (#263) moved focus exactly once
+  to Cx Проводник, updated the large featured title/artwork and kept
+  a strong visible keyline (screenshot #264).
+- **PASS — MENU favorite toggle/reordering:** MENU (#265) pinned
+  Cx Проводник, moved it first and preserved focus and hero (screenshot
+  #266). MENU again (#267) removed the favorite (screenshot #268).
+- **PASS — Settings wording and return:** UP, RIGHT, RIGHT, OK
+  (#269–#272) opened Settings, where screenshot #273 showed
+  `Компактная полка` and its horizontal-dock explanation. BACK
+  (#274) returned to All while preserving focus on Cx Проводник
+  (screenshot #275). No setting data migration was performed.
+- **PASS — empty Favorites once:** UP, RIGHT, OK (#276–#278) opened
+  Favorites; screenshot #279 showed the empty-state explanation once,
+  with no repeated paragraph under the hero. BACK (#280) restored
+  All and selected Cx Проводник (screenshot #281).
+- **Installed package preservation:** `app_info` #282 confirmed older
+  `dev.monolith.tv.cinema` 0.1.4 code 5, and #284 confirmed
+  `dev.monolith.tv.review` 0.1.3 code 4. `app_info` #283 returned
+  `unknown` for the old `dev.monolith.tv.preview` version; its
+  installation status cannot be concluded from this probe. There
+  was no uninstall, data clear, or HOME-selection change during this audit.
+
+**Not checked:** physical remote key repeat, 720p layout, cold boot,
+RAM/FPS/long-run stability, Android system settings round-trip and stable
+APK upgrade signing.
+
+**Verdict: the Cinema first-launch focus defect and the two identified
+UX-copy issues are VERIFIED FIXED on BOXY.** Overall release/device
+acceptance remains *pre-alpha* because the checks above are still pending.
+Screenshots reside in the private `vitrum-tv-bridge` repository; do
+not copy them into this public project.
