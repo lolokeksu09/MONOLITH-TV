@@ -15,8 +15,8 @@ android {
         applicationId = "dev.monolith.tv"
         minSdk = 26
         targetSdk = 35
-        versionCode = 5
-        versionName = "0.1.4-prealpha"
+        versionCode = 6
+        versionName = "0.1.4.1-prealpha"
     }
 
     buildTypes {
@@ -38,6 +38,13 @@ android {
             initWith(getByName("debug"))
             applicationIdSuffix = ".cinema"
             versionNameSuffix = "-cinema"
+        }
+        create("cinemafix") {
+            // One-time parallel acceptance for fixed initial D-pad focus.
+            // Never delete the user's 0.1.4 cinema app to work around CI signing.
+            initWith(getByName("debug"))
+            applicationIdSuffix = ".cinemafix"
+            versionNameSuffix = "-cinemafix"
         }
         release {
             // No production release is distributed until dedicated stable signing exists.
