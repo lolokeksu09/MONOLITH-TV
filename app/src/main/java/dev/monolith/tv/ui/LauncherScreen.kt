@@ -158,10 +158,10 @@ fun LauncherScreen(
             restoreKey = null
             return@LaunchedEffect
         }
-        val key = (restoreKey ?: focusedKey)
-            ?.takeIf { candidate ->
-                visible.any { it.component.flattenToString() == candidate }
-            } ?: visible.first().component.flattenToString()
+        val key = resolveDockFocusKey(
+            visible.map { it.component.flattenToString() },
+            restoreKey ?: focusedKey
+        ) ?: return@LaunchedEffect
         val index = visible.indexOfFirst { it.component.flattenToString() == key }
         shelfState.scrollToItem(index)
         requestedDockFocusKey = key
